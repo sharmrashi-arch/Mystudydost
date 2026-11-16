@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#4F46E5" />
+  <meta name="description" content="MyStudyDost - free study help for CBSE, HBSE and more." />
+  <title>MyStudyDost - Your True Study Companion</title>
+  <link rel="manifest" href="/static/manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">M</div>
+        <div>
+          <div class="brand-name">MyStudyDost</div>
+          <div class="brand-tag">Free Study App</div>
+        </div>
+      </div>
+    </header>
+
+    <main class="hero">
+      <p class="eyebrow">Free education for every child</p>
+      <h1>Your True Study Companion</h1>
+      <p class="sub">From CBSE and HBSE schools to college and beyond — syllabus, chapters, questions, answers, and quizzes in one place. Learning should not stop because books are unaffordable.</p>
+
+      <div class="search-card">
+        <input id="homeSearch" type="text" placeholder="Ask anything: 'Class 1 Maths syllabus' or 'HBSE Class 6 Science chapters'" />
+        <a class="primary-btn" href="/chat">Start Learning</a>
+      </div>
+
+      <section class="grid">
+        <a class="card" href="/chat?level=school&board=CBSE">
+          <h3>School</h3>
+          <p>CBSE Class 1 - 12 (starting with Class 1)</p>
+          <span>Open &rarr;</span>
+        </a>
+        <a class="card" href="/chat?level=college">
+          <h3>College</h3>
+          <p>BA / BSc / BCom from free syllabus sources</p>
+          <span>Open &rarr;</span>
+        </a>
+        <a class="card" href="/chat?level=pg">
+          <h3>Post Graduate</h3>
+          <p>MA / MSc / MCom (phase-wise)</p>
+          <span>Open &rarr;</span>
+        </a>
+        <a class="card" href="/chat?level=more">
+          <h3>More Boards</h3>
+          <p>HBSE, NIOS and other free official sources</p>
+          <span>Open &rarr;</span>
+        </a>
+      </section>
+
+      <section class="trust">
+        <div class="trust-item"><strong>Free</strong><span>Only free and official sources</span></div>
+        <div class="trust-item"><strong>With Sources</strong><span>Every answer includes a reference</span></div>
+        <div class="trust-item"><strong>App-like</strong><span>Installable in your browser</span></div>
+      </section>
+    </main>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

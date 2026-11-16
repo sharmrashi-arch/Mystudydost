@@ -1,0 +1,11 @@
+{
+  "name": "MyStudyDost",
+  "short_name": "MyStudyDost",
+  "description": "Free study app for students - syllabus, chapters, questions and quiz",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#EEF0FF",
+  "theme_color": "#4F46E5",
+  "icons": []
+}

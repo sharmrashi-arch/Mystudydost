@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#4F46E5" />
+  <title>MyStudyDost Chat</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;600&family=Noto+Sans+Gujarati:wght@400;600&family=Noto+Sans+Gurmukhi:wght@400;600&family=Noto+Sans+Kannada:wght@400;600&family=Noto+Sans+Malayalam:wght@400;600&family=Noto+Sans+Oriya:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Telugu:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell chat-shell">
+    <header class="topbar">
+      <div class="brand">
+        <a href="preview-home.html" class="logo-link" aria-label="Home"><div class="logo">M</div></a>
+        <div>
+          <div class="brand-name">MyStudyDost</div>
+          <div class="brand-tag">Study Chat</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="chip-btn" id="menuBtn">Menu</button>
+      </div>
+    </header>
+
+    <div class="chat-layout">
+      <aside class="sidebar" id="sidebar">
+        <h3>Study Setup</h3>
+        <label>Board / Level
+          <select id="boardSelect"><option>CBSE</option><option>HBSE</option></select>
+        </label>
+        <label>Class / Course
+          <select id="classSelect"><option>Class 1</option><option>Class 2</option></select>
+        </label>
+        <label>Subject
+          <select id="subjectSelect"><option>Mathematics</option><option>English</option></select>
+        </label>
+        <label>Chat Language
+          <select id="chatLanguage">
+            <option value="en">English</option>
+            <option value="hi">Hindi (à¤¹à¤¿à¤¨à¥à¤¦à¥€)</option>
+            <option value="bn">Bengali (à¦¬à¦¾à¦‚à¦²à¦¾)</option>
+            <option value="te">Telugu (à°¤à±†à°²à±à°—à±)</option>
+            <option value="mr">Marathi (à¤®à¤°à¤¾à¤ à¥€)</option>
+            <option value="ta">Tamil (à®¤à®®à®¿à®´à¯)</option>
+            <option value="ur">Urdu (Ø§Ø±Ø¯Ùˆ)</option>
+            <option value="gu">Gujarati (àª—à«àªœàª°àª¾àª¤à«€)</option>
+            <option value="kn">Kannada (à²•à²¨à³à²¨à²¡)</option>
+            <option value="ml">Malayalam (à´®à´²à´¯à´¾à´³à´‚)</option>
+            <option value="or">Odia (à¬“à¬¡à¬¼à¬¿à¬†)</option>
+            <option value="pa">Punjabi (à¨ªà©°à¨œà¨¾à¨¬à©€)</option>
+            <option value="as">Assamese (à¦…à¦¸à¦®à§€à¦¯à¦¼à¦¾)</option>
+            <option value="mai">Maithili (à¤®à¥ˆà¤¥à¤¿à¤²à¥€)</option>
+            <option value="sa">Sanskrit (à¤¸à¤‚à¤¸à¥à¤•à¥ƒà¤¤à¤®à¥)</option>
+          </select>
+        </label>
+        <div class="chapter-box">
+          <div class="chapter-title">Chapters</div>
+          <ul id="chapterList" class="chapter-list">
+            <li class="active">Chapter 1 (sample)</li>
+            <li>Chapter 2 (sample)</li>
+            <li>Real chapters will appear when data is loaded</li>
+          </ul>
+        </div>
+      </aside>
+
+      <section class="chat-panel">
+        <div id="messages" class="messages">
+          <div class="bubble bot" id="welcomeBubble">
+            <span id="welcomeText">Hello! I am MyStudyDost. Select your board, class, subject, and chat language, then ask for syllabus, chapters, or questions. You can ask in your preferred Indian language.</span>
+            <div class="source-chip">Source: setup pending</div>
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <button class="qa" data-action="syllabus">Syllabus</button>
+          <button class="qa" data-action="chapters">All chapters</button>
+          <button class="qa" data-action="questions">Important questions</button>
+          <button class="qa" data-action="quiz">Take quiz</button>
+        </div>
+
+        <form id="chatForm" class="composer">
+          <input id="chatInput" type="text" placeholder="Type your question here..." autocomplete="off" />
+          <button type="submit" class="send-btn">Send</button>
+        </form>
+        <div class="note">Answers will be study-related only. Official/free sources will be shown as references. Choose your chat language from the sidebar.</div>
+      </section>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
+
