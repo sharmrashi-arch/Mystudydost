@@ -1,4 +1,4 @@
-import json
+﻿import json
 import re
 from pathlib import Path
 
@@ -19,13 +19,18 @@ CHUNK_SIZE = 800
 CHUNK_OVERLAP = 100
 
 
-def extract_pdf_text(pdf_path: Path) -> list[dict]:
+def extract_pdf_text(pdf_path):
     if fitz is None:
         raise RuntimeError("PyMuPDF (pymupdf) not installed. Run: pip install -r requirements.txt")
-    doc = fitz.open(pdf_path)
+    doc = fitz.open(str(pdf_path))
     pages = []
-    for i, page in enumerate(doc, start=1):
-        text = page.get_text("text") or ""
+    i = 0
+    for page in doc:
+        i += 1
+        try:
+            text = page.get_text("text") or ""
+        except Exception:
+            text = ""
         text = re.sub(r"\s+", " ", text).strip()
         if text:
             pages.append({"page": i, "text": text})
@@ -33,7 +38,7 @@ def extract_pdf_text(pdf_path: Path) -> list[dict]:
     return pages
 
 
-def chunk_text(text: str, size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP) -> list[str]:
+def chunk_text(text, size=CHUNK_SIZE, overlap=CHUNK_OVERLAP):
     chunks = []
     start = 0
     n = len(text)
@@ -48,9 +53,11 @@ def chunk_text(text: str, size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP) 
     return chunks
 
 
-def infer_meta(pdf_path: Path) -> dict:
-    # Expected: data/raw/<board>/<class>/<subject>/<file>.pdf
-    parts = pdf_path.relative_to(RAW_DATA_DIR).parts
+def infer_meta(pdf_path):
+    try:
+        parts = pdf_path.relative_to(RAW_DATA_DIR).parts
+    except Exception:
+        parts = pdf_path.parts
     meta = {"board": "Unknown", "class": "Unknown", "subject": "Unknown", "chapter": pdf_path.stem, "source_file": pdf_path.name}
     if len(parts) >= 1:
         meta["board"] = parts[0]
@@ -61,19 +68,38 @@ def infer_meta(pdf_path: Path) -> dict:
     return meta
 
 
+def update_catalog_from_raw():
+    if not CATALOG_PATH.exists():
+        return
+    try:
+        with open(str(CATALOG_PATH), "r", encoding="utf-8") as f:
+            catalog = json.load(f)
+    except Exception:
+        return
+    catalog.setdefault("ingestion", {})
+    catalog["ingestion"]["raw_pdf_count"] = len(list(RAW_DATA_DIR.rglob("*.pdf"))) if RAW_DATA_DIR.exists() else 0
+    catalog["ingestion"]["db_path"] = str(DB_DIR)
+    try:
+        with open(str(CATALOG_PATH), "w", encoding="utf-8") as f:
+            json.dump(catalog, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+
+
 def main():
     RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
     DB_DIR.mkdir(parents=True, exist_ok=True)
     pdfs = list(RAW_DATA_DIR.rglob("*.pdf"))
     if not pdfs:
-        print("No PDFs found in data/raw. Run scripts/download_data.py after adding direct PDF URLs to data/sources.json.")
+        update_catalog_from_raw()
+        print("No PDFs found in data/raw. Run: python scripts/download_data.py (aur agar hub se direct PDF na mile to data/sources.json me direct PDF URLs add karo).")
         return
 
     try:
         import chromadb
         from chromadb.utils import embedding_functions
     except Exception as e:
-        raise RuntimeError(f"chromadb/sentence-transformers not ready: {e}. Install requirements first.")
+        raise RuntimeError("chromadb/sentence-transformers not ready: %s. Install requirements first (pip install -r requirements.txt)." % e)
 
     client = chromadb.PersistentClient(path=str(DB_DIR))
     ef = embedding_functions.SentenceTransformerEmbeddingFunction(
@@ -84,21 +110,29 @@ def main():
     total_chunks = 0
     for pdf in pdfs:
         meta_base = infer_meta(pdf)
-        pages = extract_pdf_text(pdf)
+        try:
+            pages = extract_pdf_text(pdf)
+        except Exception as e:
+            print("Skip %s: %s" % (pdf, e))
+            continue
         for page in pages:
             chunks = chunk_text(page["text"])
             for idx, chunk in enumerate(chunks):
-                doc_id = f"{meta_base['board']}|{meta_base['class']}|{meta_base['subject']}|{pdf.stem}|p{page['page']}|{idx}"
-                metadata = {**meta_base, "page": page["page"], "chunk_index": idx, "source_path": str(pdf)}
+                doc_id = "%s|%s|%s|%s|p%s|%s" % (
+                    meta_base.get("board", ""), meta_base.get("class", ""), meta_base.get("subject", ""),
+                    pdf.stem, page["page"], idx
+                )
+                doc_id = re.sub(r"\s+", "_", doc_id)[:500]
+                metadata = dict(meta_base)
+                metadata["page"] = page["page"]
+                metadata["chunk_index"] = idx
+                metadata["source_path"] = str(pdf)
                 collection.upsert(ids=[doc_id], documents=[chunk], metadatas=[metadata])
                 total_chunks += 1
-        print(f"Processed: {pdf} ({len(pages)} pages)")
+        print("Processed: %s (%s pages)" % (pdf, len(pages)))
 
-    print(f"Done. Stored chunks: {total_chunks} in {DB_DIR}")
-    if not CATALOG_PATH.exists():
-        print("catalog.json missing; create/update catalog after verifying subjects/chapters.")
-    else:
-        print(f"Catalog present: {CATALOG_PATH} (enrich chapter lists from ingested content as needed).")
+    update_catalog_from_raw()
+    print("Done. Stored chunks: %s in %s" % (total_chunks, DB_DIR))
 
 
 if __name__ == "__main__":

@@ -15,92 +15,286 @@
         {
           "name": "School",
           "classes": [
-            { "name": "Class 1", "subjects": [], "status": "planned", "book_source": "NCERT" },
-            { "name": "Class 2", "subjects": [], "status": "planned", "book_source": "NCERT" },
-            { "name": "Class 3", "subjects": [], "status": "planned", "book_source": "NCERT" },
-            { "name": "Class 4", "subjects": [], "status": "planned", "book_source": "NCERT" },
-            { "name": "Class 5", "subjects": [], "status": "planned", "book_source": "NCERT" },
-            { "name": "Class 6", "subjects": [], "status": "planned", "book_source": "NCERT" },
-            { "name": "Class 7", "subjects": [], "status": "planned", "book_source": "NCERT" },
-            { "name": "Class 8", "subjects": [], "status": "planned", "book_source": "NCERT" },
-            { "name": "Class 9", "subjects": [], "status": "planned", "book_source": "NCERT", "syllabus_source": "CBSE Academic 2026-27" },
-            { "name": "Class 10", "subjects": [], "status": "planned", "book_source": "NCERT", "syllabus_source": "CBSE Academic 2026-27" },
-            { "name": "Class 11", "subjects": [], "status": "planned", "book_source": "NCERT", "syllabus_source": "CBSE Academic 2026-27" },
-            { "name": "Class 12", "subjects": [], "status": "planned", "book_source": "NCERT", "syllabus_source": "CBSE Academic 2026-27" }
+            {
+              "name": "Class 1",
+              "subjects": [],
+              "status": "planned",
+              "book_source": "NCERT"
+            },
+            {
+              "name": "Class 2",
+              "subjects": [],
+              "status": "planned",
+              "book_source": "NCERT"
+            },
+            {
+              "name": "Class 3",
+              "subjects": [],
+              "status": "planned",
+              "book_source": "NCERT"
+            },
+            {
+              "name": "Class 4",
+              "subjects": [],
+              "status": "planned",
+              "book_source": "NCERT"
+            },
+            {
+              "name": "Class 5",
+              "subjects": [],
+              "status": "planned",
+              "book_source": "NCERT"
+            },
+            {
+              "name": "Class 6",
+              "subjects": [],
+              "status": "planned",
+              "book_source": "NCERT"
+            },
+            {
+              "name": "Class 7",
+              "subjects": [],
+              "status": "planned",
+              "book_source": "NCERT"
+            },
+            {
+              "name": "Class 8",
+              "subjects": [],
+              "status": "planned",
+              "book_source": "NCERT"
+            },
+            {
+              "name": "Class 9",
+              "subjects": [],
+              "status": "planned",
+              "book_source": "NCERT",
+              "syllabus_source": "CBSE Academic 2026-27"
+            },
+            {
+              "name": "Class 10",
+              "subjects": [],
+              "status": "planned",
+              "book_source": "NCERT",
+              "syllabus_source": "CBSE Academic 2026-27"
+            },
+            {
+              "name": "Class 11",
+              "subjects": [],
+              "status": "planned",
+              "book_source": "NCERT",
+              "syllabus_source": "CBSE Academic 2026-27"
+            },
+            {
+              "name": "Class 12",
+              "subjects": [],
+              "status": "planned",
+              "book_source": "NCERT",
+              "syllabus_source": "CBSE Academic 2026-27"
+            }
           ]
         }
       ]
     },
     {
       "name": "HBSE",
-      "official_sources": ["https://bseh.org.in/"],
+      "official_sources": [
+        "https://bseh.org.in/"
+      ],
       "levels": [
         {
           "name": "School",
           "classes": [
-            { "name": "Class 1", "subjects": [], "status": "pending-links" },
-            { "name": "Class 2", "subjects": [], "status": "pending-links" },
-            { "name": "Class 3", "subjects": [], "status": "pending-links" },
-            { "name": "Class 4", "subjects": [], "status": "pending-links" },
-            { "name": "Class 5", "subjects": [], "status": "pending-links" },
-            { "name": "Class 6", "subjects": [], "status": "pending-links" },
-            { "name": "Class 7", "subjects": [], "status": "pending-links" },
-            { "name": "Class 8", "subjects": [], "status": "pending-links" },
-            { "name": "Class 9", "subjects": [], "status": "pending-links" },
-            { "name": "Class 10", "subjects": [], "status": "pending-links" },
-            { "name": "Class 11", "subjects": [], "status": "pending-links" },
-            { "name": "Class 12", "subjects": [], "status": "pending-links" }
+            {
+              "name": "Class 1",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "Class 2",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "Class 3",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "Class 4",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "Class 5",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "Class 6",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "Class 7",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "Class 8",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "Class 9",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "Class 10",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "Class 11",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "Class 12",
+              "subjects": [],
+              "status": "pending-links"
+            }
           ]
         }
       ]
     },
     {
       "name": "Kurukshetra University (KUK)",
-      "official_sources": ["https://kuk.ac.in/", "https://ddekuk.ac.in/syllabus.php"],
+      "official_sources": [
+        "https://kuk.ac.in/",
+        "https://ddekuk.ac.in/syllabus.php"
+      ],
       "levels": [
         {
           "name": "College/University",
           "courses": [
-            { "name": "BA", "subjects": [], "status": "pending-links" },
-            { "name": "BSc", "subjects": [], "status": "pending-links" },
-            { "name": "BCom", "subjects": [], "status": "pending-links" },
-            { "name": "MA", "subjects": [], "status": "pending-links" },
-            { "name": "MSc", "subjects": [], "status": "pending-links" },
-            { "name": "MCom", "subjects": [], "status": "pending-links" },
-            { "name": "Distance Education", "subjects": [], "status": "pending-links", "source": "DDE KUK syllabus" }
+            {
+              "name": "BA",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "BSc",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "BCom",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "MA",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "MSc",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "MCom",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "Distance Education",
+              "subjects": [],
+              "status": "pending-links",
+              "source": "DDE KUK syllabus"
+            }
           ]
         }
       ]
     },
     {
       "name": "MDU Rohtak",
-      "official_sources": ["https://mdu.ac.in/"],
+      "official_sources": [
+        "https://mdu.ac.in/"
+      ],
       "levels": [
         {
           "name": "College/University",
           "courses": [
-            { "name": "BA", "subjects": [], "status": "pending-links" },
-            { "name": "BSc", "subjects": [], "status": "pending-links" },
-            { "name": "BCom", "subjects": [], "status": "pending-links" },
-            { "name": "MA", "subjects": [], "status": "pending-links" },
-            { "name": "MSc", "subjects": [], "status": "pending-links" },
-            { "name": "MCom", "subjects": [], "status": "pending-links" }
+            {
+              "name": "BA",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "BSc",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "BCom",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "MA",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "MSc",
+              "subjects": [],
+              "status": "pending-links"
+            },
+            {
+              "name": "MCom",
+              "subjects": [],
+              "status": "pending-links"
+            }
           ]
         }
       ]
     },
     {
       "name": "Delhi University",
-      "official_sources": ["https://www.du.ac.in/"],
+      "official_sources": [
+        "https://www.du.ac.in/"
+      ],
       "levels": [
-        { "name": "College/University", "courses": [{ "name": "UG/PG Programs", "subjects": [], "status": "pending-links" }] }
+        {
+          "name": "College/University",
+          "courses": [
+            {
+              "name": "UG/PG Programs",
+              "subjects": [],
+              "status": "pending-links"
+            }
+          ]
+        }
       ]
     },
     {
       "name": "IGNOU",
-      "official_sources": ["https://www.ignou.ac.in/"],
+      "official_sources": [
+        "https://www.ignou.ac.in/"
+      ],
       "levels": [
-        { "name": "College/University", "courses": [{ "name": "UG/PG/Certificate Programs", "subjects": [], "status": "pending-links" }] }
+        {
+          "name": "College/University",
+          "courses": [
+            {
+              "name": "UG/PG/Certificate Programs",
+              "subjects": [],
+              "status": "pending-links"
+            }
+          ]
+        }
       ]
     },
     {
@@ -118,25 +312,59 @@
         {
           "name": "College/PG/National",
           "resources": [
-            { "name": "UGC Model Curriculum & Rules", "status": "reference", "url": "https://www.ugc.ac.in/" },
-            { "name": "AICTE Technical Resources", "status": "reference", "url": "https://aicte.gov.in/" },
-            { "name": "SWAYAM (Class 9 to PG)", "status": "reference", "url": "https://swayam.gov.in/" },
-            { "name": "e-PG Pathshala (PG e-content)", "status": "reference", "url": "https://epgp.inflibnet.ac.in/" },
-            { "name": "UG/PG MOOCs", "status": "reference", "url": "https://ugcmoocs.inflibnet.ac.in/" },
-            { "name": "CEC UG e-content", "status": "reference", "url": "https://cec.nic.in/cec/" },
-            { "name": "NPTEL Technical Courses", "status": "reference", "url": "https://nptel.ac.in/" }
+            {
+              "name": "UGC Model Curriculum & Rules",
+              "status": "reference",
+              "url": "https://www.ugc.ac.in/"
+            },
+            {
+              "name": "AICTE Technical Resources",
+              "status": "reference",
+              "url": "https://aicte.gov.in/"
+            },
+            {
+              "name": "SWAYAM (Class 9 to PG)",
+              "status": "reference",
+              "url": "https://swayam.gov.in/"
+            },
+            {
+              "name": "e-PG Pathshala (PG e-content)",
+              "status": "reference",
+              "url": "https://epgp.inflibnet.ac.in/"
+            },
+            {
+              "name": "UG/PG MOOCs",
+              "status": "reference",
+              "url": "https://ugcmoocs.inflibnet.ac.in/"
+            },
+            {
+              "name": "CEC UG e-content",
+              "status": "reference",
+              "url": "https://cec.nic.in/cec/"
+            },
+            {
+              "name": "NPTEL Technical Courses",
+              "status": "reference",
+              "url": "https://nptel.ac.in/"
+            }
           ]
         }
       ]
     },
     {
       "name": "Entrance Exams",
-      "official_sources": ["https://cuet.nta.nic.in/"],
+      "official_sources": [
+        "https://cuet.nta.nic.in/"
+      ],
       "levels": [
         {
           "name": "Entrance",
           "exams": [
-            { "name": "CUET UG", "status": "reference", "url": "https://cuet.nta.nic.in/" }
+            {
+              "name": "CUET UG",
+              "status": "reference",
+              "url": "https://cuet.nta.nic.in/"
+            }
           ]
         }
       ]
@@ -149,5 +377,9 @@
     "national_resources": "UGC/AICTE curriculum frameworks; SWAYAM, e-PG Pathshala, UG/PG MOOCs, CEC, NPTEL se BA/BSc/MA/MSc/technical ke liye free e-content/course references.",
     "ingestion_policy": "Sirf official/free sources; direct PDF/document URLs prefer; har jawab me source dikhana; unknown info invent nahi karna."
   },
-  "note": "Extensible catalog (school + college + PG + national + entrance). Subjects/chapters/resources ingest pipeline se enrich honge."
+  "note": "Extensible catalog (school + college + PG + national + entrance). Subjects/chapters/resources ingest pipeline se enrich honge.",
+  "ingestion": {
+    "raw_pdf_count": 0,
+    "db_path": "C:\\Users\\pc\\Downloads\\Mystudydost\\db"
+  }
 }

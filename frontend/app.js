@@ -107,12 +107,46 @@
     });
   }
 
+  async function requestQuiz(topic) {
+    if (!messages) return;
+    addBubble(topic || t().quiz, 'user');
+    const typing = document.createElement('div');
+    typing.className = 'bubble bot typing';
+    typing.textContent = t().typing;
+    messages.appendChild(typing);
+    messages.scrollTop = messages.scrollHeight;
+    try {
+      const res = await fetch('/api/quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic: topic || t().quiz,
+          board: document.getElementById('boardSelect')?.value || 'CBSE',
+          class: document.getElementById('classSelect')?.value || 'Class 1',
+          subject: document.getElementById('subjectSelect')?.value || 'Mathematics',
+          language: getLang()
+        })
+      });
+      if (!res.ok) throw new Error('Quiz API not ready');
+      const data = await res.json();
+      typing.remove();
+      addBubble(data.quiz || 'No quiz available.', 'bot', (data.sources && data.sources[0]) || 'Source: API');
+    } catch (e) {
+      typing.remove();
+      sendQuestion(topic || t().quiz);
+    }
+  }
+
   document.querySelectorAll('.qa').forEach((btn) => {
     btn.addEventListener('click', () => {
       const action = btn.getAttribute('data-action');
       const tr = t();
       const q = (action && tr[action]) ? tr[action] : (btn.getAttribute('data-q') || btn.textContent);
-      sendQuestion(q);
+      if (action === 'quiz') {
+        requestQuiz(q);
+      } else {
+        sendQuestion(q);
+      }
     });
   });
 
