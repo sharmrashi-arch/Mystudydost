@@ -18,75 +18,146 @@
         <a href="/" class="logo-link" aria-label="Home"><div class="logo">M</div></a>
         <div>
           <div class="brand-name">MyStudyDost</div>
-          <div class="brand-tag">Study Chat</div>
+          <div class="brand-tag">Study Assistant</div>
         </div>
       </div>
-      <div class="actions">
-        <button class="chip-btn" id="menuBtn">Menu</button>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="newChatBtn" aria-label="New chat" title="New chat">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </button>
+        <button class="icon-btn" id="sidebarToggle" aria-label="Toggle sidebar" title="Toggle sidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
       </div>
     </header>
 
     <div class="chat-layout">
-      <aside class="sidebar" id="sidebar">
-        <h3>Study Setup</h3>
-        <label>Board / Level
-          <select id="boardSelect"><option>CBSE</option><option>HBSE</option></select>
-        </label>
-        <label>Class / Course
-          <select id="classSelect"><option>Class 1</option><option>Class 2</option></select>
-        </label>
-        <label>Subject
-          <select id="subjectSelect"><option>Mathematics</option><option>English</option></select>
-        </label>
-        <label>Chat Language
-          <select id="chatLanguage">
-            <option value="en">English</option>
-            <option value="hi">Hindi (हिन्दी)</option>
-            <option value="bn">Bengali (বাংলা)</option>
-            <option value="te">Telugu (తెలుగు)</option>
-            <option value="mr">Marathi (मराठी)</option>
-            <option value="ta">Tamil (தமிழ்)</option>
-            <option value="ur">Urdu (اردو)</option>
-            <option value="gu">Gujarati (ગુજરાતી)</option>
-            <option value="kn">Kannada (ಕನ್ನಡ)</option>
-            <option value="ml">Malayalam (മലയാളം)</option>
-            <option value="or">Odia (ଓଡ଼ିଆ)</option>
-            <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
-            <option value="as">Assamese (অসমীয়া)</option>
-            <option value="mai">Maithili (मैथिली)</option>
-            <option value="sa">Sanskrit (संस्कृतम्)</option>
-          </select>
-        </label>
-        <div class="chapter-box">
-          <div class="chapter-title">Chapters</div>
-          <ul id="chapterList" class="chapter-list">
-            <li class="active">Chapter 1 (sample)</li>
-            <li>Chapter 2 (sample)</li>
-            <li>Real chapters will appear when data is loaded</li>
-          </ul>
+      <aside class="sidebar" id="sidebar" role="navigation" aria-label="Chat history">
+        <div class="sidebar-header">
+          <h2>Chats</h2>
+          <button class="icon-btn" id="closeSidebar" aria-label="Close sidebar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="sidebar-search">
+          <input type="text" id="chatSearch" placeholder="Search chats..." aria-label="Search chats" />
+        </div>
+        <div class="chat-list" id="chatList" role="listbox">
+          <div class="chat-item active" data-chat-id="new" role="option">
+            <div class="chat-item-content">
+              <svg class="chat-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span class="chat-title">New Chat</span>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-footer">
+          <div class="study-setup">
+            <h3>Study Setup</h3>
+            <label>Board / Level
+              <select id="boardSelect"><option>CBSE</option><option>HBSE</option></select>
+            </label>
+            <label>Class / Course
+              <select id="classSelect"><option>Class 1</option><option>Class 2</option></select>
+            </label>
+            <label>Subject
+              <select id="subjectSelect"><option>Mathematics</option><option>English</option></select>
+            </label>
+            <label>Chat Language
+              <select id="chatLanguage">
+                <option value="en">English</option>
+                <option value="hi">Hindi (हिन्दी)</option>
+                <option value="bn">Bengali (বাংলা)</option>
+                <option value="te">Telugu (తెలుగు)</option>
+                <option value="mr">Marathi (मराठी)</option>
+                <option value="ta">Tamil (தமிழ்)</option>
+                <option value="ur">Urdu (اردو)</option>
+                <option value="gu">Gujarati (ગુજરાતી)</option>
+                <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                <option value="ml">Malayalam (മലയാളം)</option>
+                <option value="or">Odia (ଓଡ଼ିଆ)</option>
+                <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
+                <option value="as">Assamese (অসমীয়া)</option>
+                <option value="mai">Maithili (मैथिली)</option>
+                <option value="sa">Sanskrit (संस्कृतम्)</option>
+              </select>
+            </label>
+          </div>
         </div>
       </aside>
 
-      <section class="chat-panel">
-        <div id="messages" class="messages">
-          <div class="bubble bot" id="welcomeBubble">
-            <span id="welcomeText">Hello! I am MyStudyDost. Select your board, class, subject, and chat language, then ask for syllabus, chapters, or questions. You can ask in your preferred Indian language.</span>
-            <div class="source-chip">Source: setup pending</div>
+      <section class="chat-panel" id="chatPanel">
+        <div class="chat-header">
+          <div class="chat-header-info">
+            <h1 id="currentChatTitle">MyStudyDost</h1>
+            <p id="currentChatSubtitle">Your free study companion</p>
+          </div>
+          <div class="chat-header-actions">
+            <button class="icon-btn" id="clearChatBtn" aria-label="Clear chat" title="Clear chat">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
           </div>
         </div>
 
-        <div class="quick-actions">
-          <button class="qa" data-action="syllabus">Syllabus</button>
-          <button class="qa" data-action="chapters">All chapters</button>
-          <button class="qa" data-action="questions">Important questions</button>
-          <button class="qa" data-action="quiz">Take quiz</button>
+        <div class="messages" id="messages" role="log" aria-live="polite">
+          <div class="welcome-message" id="welcomeMessage">
+            <div class="welcome-avatar">M</div>
+            <div class="welcome-content">
+              <h2>Welcome to MyStudyDost!</h2>
+              <p id="welcomeText">Hello! I am MyStudyDost. Select your board, class, subject, and chat language, then ask for syllabus, chapters, or questions. You can ask in your preferred Indian language.</p>
+              <div class="welcome-suggestions">
+                <button class="suggestion-btn" data-action="syllabus">Show Syllabus</button>
+                <button class="suggestion-btn" data-action="chapters">List Chapters</button>
+                <button class="suggestion-btn" data-action="questions">Important Questions</button>
+                <button class="suggestion-btn" data-action="quiz">Take a Quiz</button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <form id="chatForm" class="composer">
-          <input id="chatInput" type="text" placeholder="Type your question here..." autocomplete="off" />
-          <button type="submit" class="send-btn">Send</button>
-        </form>
-        <div class="note">Answers will be study-related only. Official/free sources will be shown as references. Choose your chat language from the sidebar.</div>
+        <div class="composer-area">
+          <div class="composer" id="composer">
+            <button class="icon-btn voice-btn" id="voiceBtn" aria-label="Voice message" title="Voice message">
+              <svg class="mic-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="22"></line>
+              </svg>
+              <svg class="stop-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+                <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+              </svg>
+            </button>
+            <div class="input-wrapper">
+              <input id="chatInput" type="text" placeholder="Type your question here..." autocomplete="off" aria-label="Chat input" />
+              <div class="voice-visualizer" id="voiceVisualizer" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+            <button type="button" class="send-btn" id="sendBtn" aria-label="Send message">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+          <div class="voice-transcript" id="voiceTranscript" aria-live="polite"></div>
+          <p class="note">Answers from official/free sources only. Sources shown with each response. Select chat language from sidebar.</p>
+        </div>
       </section>
     </div>
   </div>
