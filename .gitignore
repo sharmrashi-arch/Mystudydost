@@ -25,3 +25,6 @@ Thumbs.db
 db/
 data/raw/
 .venv/
+
+# Node
+node_modules/

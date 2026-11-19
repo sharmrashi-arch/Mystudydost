@@ -1,811 +1,1244 @@
-(function () {
+(function() {
   'use strict';
 
-  const chatI18n = {
-    en: { welcome: "Hello! I am MyStudyDost. Select your board, class, subject, and chat language, then ask for syllabus, chapters, or questions. You can ask in your preferred Indian language.", placeholder: "Type your question here...", typing: "Thinking...", demo: "Backend AI (RAG/Groq/SERP) is not connected yet. I understood your question. In the next step, you will get answers from real syllabus/books.", sourcePending: "Source: setup pending", sourceDemo: "Source: demo mode", syllabus: "Show the syllabus for this class and subject.", chapters: "List all chapters for this subject.", questions: "Give important questions for this chapter.", quiz: "Create a short quiz for this chapter.", newChat: "New Chat", searchPlaceholder: "Search chats...", voiceStart: "Start recording", voiceStop: "Stop recording", voiceTranscribing: "Transcribing...", voiceError: "Could not record audio. Please check microphone permissions.", noSpeech: "No speech detected. Please try again.", copy: "Copy", copied: "Copied!" },
-    hi: { welcome: "नमस्ते! मैं MyStudyDost हूँ। अपना बोर्ड, कक्षा, विषय और चैट भाषा चुनें, फिर पाठ्यक्रम, अध्याय या सवाल पूछें।", placeholder: "अपना सवाल यहाँ लिखें...", typing: "सोच रहा हूँ...", demo: "बैकएंड AI अभी जुड़ना बाकी है। मैंने आपका सवाल समझ लिया है। अगले चरण में असली पाठ्यक्रम/किताबों से जवाब मिलेगा।", sourcePending: "स्रोत: सेटअप बाकी है", sourceDemo: "स्रोत: डेमो मोड", syllabus: "इस कक्षा और विषय का पाठ्यक्रम बताइए।", chapters: "इस विषय के सभी अध्याय बताइए।", questions: "इस अध्याय के महत्वपूर्ण प्रश्न बताइए।", quiz: "इस अध्याय की एक छोटी क्विज़ बनाइए।", newChat: "नई चैट", searchPlaceholder: "चैट खोजें...", voiceStart: "रिकॉर्डिंग शुरू करें", voiceStop: "रिकॉर्डिंग बंद करें", voiceTranscribing: "लिखा जा रहा है...", voiceError: "ऑडियो रिकॉर्ड नहीं कर सके। कृपया माइक्रोफ़ोन अनुमति जांचें।", noSpeech: "कोई आवाज़ नहीं आई। कृपया फिर से कोशिश करें।", copy: "कॉपी करें", copied: "कॉपी हो गया!" },
-    bn: { welcome: "নমস্কার! আমি MyStudyDost। আপনার বোর্ড, শ্রেণি, বিষয় এবং চ্যাটের ভাষা নির্বাচন করুন, তারপর সিলেবাস, অধ্যায় বা প্রশ্ন জিজ্ঞাসা করুন।", placeholder: "এখানে আপনার প্রশ্ন লিখুন...", typing: "ভাবছি...", demo: "ব্যাকএন্ড AI এখনও সংযুক্ত নয়। আমি আপনার প্রশ্ন বুঝেছি। পরবর্তী ধাপে আসল সিলেবাস/বই থেকে উত্তর পাবেন।", sourcePending: "সূত্র: সেটআপ বাকি", sourceDemo: "সূত্র: ডেমো মোড", syllabus: "এই শ্রেণি ও বিষয়ের সিলেবাস দেখান।", chapters: "এই বিষয়ের সব অধ্যায়ের তালিকা দিন।", questions: "এই অধ্যায়ের গুরুত্বপূর্ণ প্রশ্ন দিন।", quiz: "এই অধ্যায়ের একটি ছোট কুইজ তৈরি করুন।", newChat: "নতুন চ্যাট", searchPlaceholder: "চ্যাট খুঁজুন...", voiceStart: "রেকর্ডিং শুরু করুন", voiceStop: "রেকর্ডিং বন্ধ করুন", voiceTranscribing: "লিখা হচ্ছে...", voiceError: "অডিও রেকর্ড করা যায়নি। মাইক্রোফোন অনুমতি যাচাই করুন।", noSpeech: "কোনো বকতা পাওয়া যায়নি। আবার চেষ্টা করুন।", copy: "কপি করুন", copied: "কপি হয়েছে!" },
-    te: { welcome: "నమస్తే! నేను MyStudyDost. మీబోర్డు, తరగతి, విషయం మరియు చాట్ భాషను ఎంచుకుని, సిలబస్, అధ్యాయాలు లేదా ప్రశ్నలు అడగండి.", placeholder: "మీ ప్రశ్నను ఇక్కడ టైప్ చేయండి...", typing: "ఆలోచిస్తున్నాను...", demo: "బ్యాకెండ్ AI ఇంకా కనెక్ట్ కాలేదు. మీ ప్రశ్న నాకు అర్థమైంది. తదుపరి దశలో అసలు సిలబస్/పుస్తకాల నుండి సమాధానాలు వస్తాయి.", sourcePending: "మూలం: సెటప్ పెండింగ్", sourceDemo: "మూలం: డెమో మోడ్", syllabus: "ఈ తరగతి మరియు విషయానికి సిలబస్ చూపించండి.", chapters: "ఈ విషయంలోని అన్ని అధ్యాయాలను జాబితా చేయండి.", questions: "ఈ అధ్యాయానికి ముఖ్యమైన ప్రశ్నలు ఇవ్వండి.", quiz: "ఈ అధ్యాయానికి చిన్న క్విజ్ తయారు చేయండి.", newChat: "కొత్త చాట్", searchPlaceholder: "చాట్లను వెతకండి...", voiceStart: "రికార్డింగ్ ప్రారంభించండి", voiceStop: "రికార్డింగ్ ఆపు చేయండి", voiceTranscribing: "లిఖించబడుతోంది...", voiceError: "ఆడియో రికార్డు చేయలేకపోయాము. మైక్రోఫోన్ అనుమతులను తనిఖీ చేయండి.", noSpeech: "మాత్ర كوई обнаружение नहीं हुआ. దయచేసి మళ్లీ ప్రయత్నించండి.", copy: "కాపీ చేయండి", copied: "కాపీ అయ్యింది!" },
-    mr: { welcome: "नमस्कार! मी MyStudyDost आहे. तुमचा बोर्ड, इयत्ता, विषय आणि चॅट भाषा निवडा, नंतर अभ्यासक्रम, धडे किंवा प्रश्न विचारा.", placeholder: "तुमचा प्रश्न येथे लिहा...", typing: "विचार करत आहे...", demo: "बॅकएंड AI अद्याप जोडलेले नाही. मला तुमचा प्रश्न समजला. पुढील टप्प्यात खऱ्या अभ्यासक्रम/पुस्तकांमधून उत्तरे मिळतील.", sourcePending: "स्रोत: सेटअप प्रलंबित", sourceDemo: "स्रोत: डेमो मोड", syllabus: "या इयत्ता आणि विषयाचा अभ्यासक्रम दाखवा.", chapters: "या विषयातील सर्व धडे सांगा.", questions: "या धड्याचे महत्त्वाचे प्रश्न द्या.", quiz: "या धड्यावर एक छोटी क्विझ तयार करा.", newChat: "नवीन चॅट", searchPlaceholder: "चॅट शोधा...", voiceStart: "रेकॉर्डिंग सुरू करा", voiceStop: "रेकॉर्डिंग थांबवा", voiceTranscribing: "लिहित आहे...", voiceError: "ऑडिओ रेकॉर्ड करू शकलं नाही. मायक्रोफोन परवानगी तपासा.", noSpeech: "काहीही बोललेले आढळलं नाही. कृपया पुन्हा प्रयत्न करा.", copy: "कॉपी करा", copied: "कॉपी झालं!" },
-    ta: { welcome: "வணக்கம்! நான் MyStudyDost. உங்கள் வாரியம், வகுப்பு, பாடம் மற்றும் அரட்டை மொழியைத் தேர்ந்தெடுத்து, பாடத்திட்டம், அத்தியாயங்கள் அல்லது கேள்விகள் கேளுங்கள்.", placeholder: "உங்கள் கேள்வியை இங்கே தட்டச்சு செய்யுங்கள்...", typing: "யோசிக்கிறேன்...", demo: "பின்தள AI இன்னும் இணைக்கப்படவில்லை. உங்கள் கேள்வி புரிந்தது. அடுத்த கட்டத்தில் உண்மையான பாடத்திட்டம்/புத்தகங்களிலிருந்து பதில்கள் கிடைக்கும்.", sourcePending: "ஆதாரம்: அமைப்பு நிலுவையில்", sourceDemo: "ஆதாரம்: டெமோ முறை", syllabus: "இந்த வகுப்பு மற்றும் பாடத்திற்கான பாடத்திட்டத்தை காட்டுங்கள்.", chapters: "இந்த பாடத்தின் அனைத்து அத்தியாயங்களையும் பட்டியலிடுங்கள்.", questions: "இந்த அத்தியாயத்தின் முக்கிய கேள்விகளை கொடுங்கள்.", quiz: "இந்த அத்தியாயத்திற்கு ஒரு சிறிய வினாடி வினா உருவாக்குங்கள்.", newChat: "புதிய அரட்டை", searchPlaceholder: "அரட்டைகளைத் தேடுங்கள்...", voiceStart: "தொகுப்பதை துவக்கவும்", voiceStop: "தொகுப்பதை நிறுத்தவும்", voiceTranscribing: "எழுதப்படுகிறது...", voiceError: "ஆடியோ பதிவேற்ற முடியவில்லை. மைக்ரோஃபோன் அனுமதியை சரிபார்க்கவும்.", noSpeech: "எந்த பேச்சும் கண்டறியப்படவில்லை. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.", copy: "காப்பி செய்க", copied: "காப்பி ஆக'hi!" },
-    ur: { welcome: "السلام علیکم! میں MyStudyDost ہوں۔ اپنا بورڈ، جماعت، مضمون اور چیٹ کی زبان منتخب کریں، پھر نصاب، ابواب یا سوالات پوچھیں۔", placeholder: "اپنا سوال یہاں لکھیں...", typing: "سوچ رہا ہوں...", demo: "بیک اینڈ AI ابھی منسلک نہیں ہے۔ میں نے آپ کا سوال سمجھ لیا ہے۔ اگلے مرحلے میں اصل نصاب/کتابوں سے جواب ملے گا۔", sourcePending: "ماخذ: سیٹ اپ باقی ہے", sourceDemo: "ماخذ: ڈیمو موڈ", syllabus: "اس جماعت اور مضمون کا نصاب بتائیں۔", chapters: "اس مضمون کے تمام ابواب بتائیں۔", questions: "اس باب کے اہم سوالات بتائیں۔", quiz: "اس باب کا ایک مختصر کوئز بنائیں۔", newChat: "نیا چیٹ", searchPlaceholder: "چیٹ تلاش کریں...", voiceStart: "رکارڈنگ شروع کریں", voiceStop: "رکارڈنگ بند کریں", voiceTranscribing: "لکھا جا رہا ہے...", voiceError: "آڈیو ریکارڈ نہیں ہو سکا۔ براہ کرم مائیکروفون کی اجازت چیک کریں۔", noSpeech: "کوئی بولی نہیں ملی۔ براہ کرم دوبارہ کوشش کریں۔", copy: "کاپی کریں", copied: "کاپی ہو گیا!" },
-    gu: { welcome: "નમસ્તે! હું MyStudyDost છું. તમારું બોર્ડ, વર્ગ, વિષય અને ચેટ ભાષા પસંદ કરો, પછી અભ્યાસક્રમ, પ્રકરણો અથવા પ્રશ્નો પૂછો.", placeholder: "તમારો પ્રશ્ન અહીં લખો...", typing: "વિચારી રહ્યો છું...", demo: "બેકએન્ડ AI હજી જોડાયેલ નથી. મેં તમારો પ્રશ્ન સમજ્યો. આગળના પગલે સાચા અભ્યાસક્રમ/પુસ્તકોથી જવાબ મળશે.", sourcePending: "સ્રોત: સેટઅપ બાકી", sourceDemo: "સ્રોત: ડેમો મોડ", syllabus: "આ વર્ગ અને વિષયનો અભ્યાસક્રમ બતાવો.", chapters: "આ વિષયના બધા પ્રકરણોની યાદી આપો.", questions: "આ પ્રકરણના મહત્વના પ્રશ્નો આપો.", quiz: "આ પ્રકરણ માટે એક નાની ક્વિઝ બનાવો.", newChat: "નવી ચેટ", searchPlaceholder: "ચેટ શોધો...", voiceStart: "રેકોર્ડિંગ શરૂ કરો", voiceStop: "રેકોર્ડિંગ બંધ કરો", voiceTranscribing: "લખવામાં આવી રહ્યું છે...", voiceError: "ઑડિયો રેકોર્ડ કરી શક્યા નથી. માઈક્રોફોન પરવાનગી તપાસો.", noSpeech: "કોઈ બોલાવુ કોઈ નથી. કૃપા કરીને ફરીથી પ્રયાસ કરો.", copy: "કોપી કરો", copied: "કોપી થયું!" },
-    kn: { welcome: "ನಮಸ್ಕಾರ! ನಾನು MyStudyDost. ನಿಮ್ಮ ಬೋರ್ಡ್, ತರಗತಿ, ವಿಷಯ ಮತ್ತು ಚಾಟ್ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ, ನಂತರ ಪಠ್ಯಕ್ರಮ, ಅಧ್ಯಾಯಗಳು ಅಥವಾ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಿ.", placeholder: "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ...", typing: "ಯೋಚಿಸುತ್ತಿದ್ದೇನೆ...", demo: "ಬ್ಯಾಕೆಂಡ್ AI ಇನ್ನೂ ಸಂಪರ್ಕಗೊಂಡಿಲ್ಲ. ನಿಮ್ಮ ಪ್ರಶ್ನೆ ನನಗೆ ಅರ್ಥವಾಗ 불�ೂ. ಮುಂದಿನ ಹಂತದಲ್ಲಿ ನಿಜವಾದ ಪಠ್ಯಕ್ರಮ/ಪುಸ್ತಕಗಳಿಂದ ಉತ್ತರಗಳು ಸಿಗುತ್ತದೆ.", sourcePending: "ಮೂಲ: ಸೆಟಪ್ ಬಾಕಿ", sourceDemo: "ಮೂಲ: ಡೆಮೋ ಮೋಡ್", syllabus: "ಈ ತರಗತಿ ಮತ್ತು ವಿಷಯದ ಪಠ್ಯಕ್ರಮವನ್ನು ತೋರಿಸಿ.", chapters: "ಈ ವಿಷಯದ ಎಲ್ಲಾ ಅಧ್ಯಾಯಗಳನ್ನು ಪಟ್ಟಿಮಾಡಿ.", questions: "ಈ ಅಧ್ಯಾಯದ ಪ್ರಮುಖ ಪ್ರಶ್ನೆಗಳನ್ನು ನೀಡಿ.", quiz: "ಈ ಅಧ್ಯಾಯಕ್ಕೆ ಒಂದು ಸಣ್ಣ ರಸಪ್ರಶ್ನೆ ರಚಿಸಿ.", newChat: "ಹೊಸ ಚಾಟ್", searchPlaceholder: "ಚಾಟ್ ಹುಡುಕಿ...", voiceStart: "ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭಿಸಿ", voiceStop: "ರೆಕಾರ್ಡಿಂಗ್ ನಿಲ್ಲಿಸಿ", voiceTranscribing: "ಲಿಖಲಾಗುತ್ತಿದೆ...", voiceError: "ಆಡಿಯೊವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಮೈಕ್ರೋಫೋನ್ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.", noSpeech: "ಯಾವುದೇ ಮಾತು ಪತ್ತೆಯಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.", copy: "ಕಾಪಿ ಮಾಡಿ", copied: "ಕಾಪಿ ಆಗಿದೆ!" },
-    ml: { welcome: "നമസ്കാരം! ഞാൻ MyStudyDost ആണ്. നിങ്ങളുടെ ബോർഡ്, ക്ലാസ്, വിഷയം, ചാറ്റ് ഭാഷ എന്നിവ തിരഞ്ഞെടുത്ത് സിലബസ്, അധ്യായങ്ങൾ അല്ലെങ്കിൽ ചോദ്യങ്ങൾ ചോദിക്കുക.", placeholder: "നിങ്ങളുടെ ചോദ്യം ഇവിടെ ടൈപ്പ് ചെയ്യുക...", typing: "ചിന്തിക്കുന്നു...", demo: "ബാക്കെൻഡ് AI ഇതുവരെ ബന്ധിപ്പിച്ചിട്ടില്ല. നിങ്ങളുടെ ചോദ്യം ഞാൻ മനസ്സിലാക്കി. അടുത്ത ഘട്ടത്തിൽ യഥാർത്ഥ സിലബസ്/പുസ്തകങ്ങളിൽ നിന്ന് ഉത്തരങ്ങൾ ലഭിക്കും.", sourcePending: "ഉറവിടം: സജ്ജീകരണം ബാക്കി", sourceDemo: "ഉറവിടം: ഡെമോ മോഡ്", syllabus: "ഈ ക്ലാസിന്റെയും വിഷയത്തിന്റെയും സിലബസ് കാണിക്കുക.", chapters: "ഈ വിഷയത്തിലെ എല്ലാ അധ്യായങ്ങളും പട്ടികപ്പെടുത്തുക.", questions: "ഈ അധ്യായത്തിലെ പ്രധാന ചോദ്യങ്ങൾ നൽകുക.", quiz: "ഈ അധ്യായത്തിന് ഒരു ചെറിയ ക്വിസ് തയ്യാറാക്കുക.", newChat: "പുതിയ ചാറ്റ്", searchPlaceholder: "ചാറ്റുകൾ തിരയുക...", voiceStart: "റെക്കോർഡിംഗ് ആരംഭിക്കുക", voiceStop: "റെക്കോർഡിംഗ് നിർത്തുക", voiceTranscribing: "എഴുതുന്നു...", voiceError: "ഓഡിയോറെക്കോർഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല. മൈക്രോഫോൺ അനുമതി പരിശോധിക്കുക.", noSpeech: "എന്തെങ്കിലും സംസാരം കണ്ടെത്തിയില്ല. ദയവായി വീണ്ടും ശ്രമിക്കുക.", copy: "കോപ്പി ചെയ്യുക", copied: "കോപ്പി ചെയ്തു!" },
-    or: { welcome: "ନମସ୍କାର! ମୁଁ MyStudyDost। ଆପଣଙ୍କ ବୋର୍ଡ, ଶ୍ରେଣୀ, ବିଷୟ ଏବଂ ଚାଟ୍ ଭାଷା ବାଛନ୍ତୁ, ତାପରେ ସିଲାବସ୍, ଅଧ୍ୟାୟ କିମ୍ବା ପ୍ରଶ୍ନ ପଚାରନ୍ତୁ।", placeholder: "ଏଠାରେ ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଲେଖନ୍ତୁ...", typing: "ଭାବୁଛି...", demo: "ବ୍ୟାକଏଣ୍ଡ AI ଏପର୍ଯ୍ୟନ୍ତ ସଂଯୁକ୍ତ ହୋଇନାହିଁ। ମୁଁ ଆପଣଙ୍କ ପ୍ରଶ୍ନ ବୁଝିଲି। ପରବର୍ତ୍ତୀ ପଦକ୍ଷେପରେ ପ୍ରକୃତ ସିଲାବସ୍/ପୁସ୍ତକରୁ ଉତ୍ତର ମିଳିବ।", sourcePending: "ଉତ୍ସ: ସେଟଅପ୍ ବାକି", sourceDemo: "ଉତ୍ସ: ଡେମୋ ମୋଡ୍", syllabus: "ଏହି ଶ୍ରେଣୀ ଓ ବିଷୟର ସିଲାବସ୍ ଦେଖାନ୍ତୁ।", chapters: "ଏହି ବିଷୟର ସମସ୍ତ ଅଧ୍ୟାୟର ତାଲିକା ଦିଅନ୍ତୁ।", questions: "ଏହି ଅଧ୍ୟାୟର ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ପ୍ରଶ୍ନ ଦିଅନ୍ତୁ।", quiz: "ଏହି ଅଧ୍ୟାୟ ପାଇଁ ଏକ ଛୋଟ କୁଇଜ୍ ତିଆରି କରନ୍ତୁ।", newChat: "ନୂତନ ଚାଟ୍", searchPlaceholder: "ଚାଟ୍ ଖୋଜନ୍ତୁ...", voiceStart: "ରେକର୍ଡିଂ ଆରମ୍ଭ କରନ୍ତୁ", voiceStop: "ରେକର୍ଡିଂ ବନ୍ଦ କରନ୍ତୁ", voiceTranscribing: "ଲେଖାଯାଉଛି...", voiceError: "ଅଡିଓ ରେକର୍ଡ କରିପାରିଲା ନାହିଁ। ମାଇକ୍ରୋଫୋନ ଅନୁମତି ଜାଞ୍ଚ କରନ୍ତୁ।", noSpeech: "କୌଣସି କଥା ମିଳିଲା ନାହିଁ। ଦୟାକରି ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ।", copy: "କପି କରନ୍ତୁ", copied: "କପି ହୋଇଛି!" },
-    pa: { welcome: "ਸਤ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ MyStudyDost ਹਾਂ। ਆਪਣਾ ਬੋਰਡ, ਜਮਾਤ, ਵਿਸ਼ਾ ਅਤੇ ਚੈਟ ਭਾਸ਼ਾ ਚੁਣੋ, ਫਿਰ ਸਿਲੇਬਸ, ਅਧਿਆਇ ਜਾਂ ਸਵਾਲ ਪੁੱਛੋ।", placeholder: "ਆਪਣਾ ਸਵਾਲ ਇੱਥੇ ਲਿਖੋ...", typing: "ਸੋਚ ਰਿਹਾ ਹਾਂ...", demo: "ਬੈਕਐਂਡ AI ਅਜੇ ਜੁੜਿਆ ਨਹੀਂ ਹੈ। ਮੈਂ ਤੁਹਾਡਾ ਸਵਾਲ ਸਮਝ ਲਿਆ ਹੈ। ਅਗਲੇ ਕਦਮ ਵਿੱਚ ਅਸਲੀ ਸਿਲੇਬਸ/ਕਿਤਾਬਾਂ ਤੋਂ ਜਵਾਬ ਮਿਲੇਗਾ।", sourcePending: "ਸਰੋਤ: ਸੈੱਟਅੱਪ ਬਾਕੀ", sourceDemo: "ਸਰੋਤ: ਡੈਮੋ ਮੋਡ", syllabus: "ਇਸ ਜਮਾਤ ਅਤੇ ਵਿਸ਼ੇ ਦਾ ਸਿਲੇਬਸ ਦਿਖਾਓ।", chapters: "ਇਸ ਵਿਸ਼ੇ ਦੇ ਸਾਰੇ ਅਧਿਆਇ ਦੱਸੋ।", questions: "ਇਸ ਅਧਿਆਇ ਦੇ ਮਹੱਤਵਪੂਰਨ ਸਵਾਲ ਦੱਸੋ।", quiz: "ਇਸ ਅਧਿਆਇ ਲਈ ਇੱਕ ਛੋਟੀ ਕਵਿਜ਼ ਬਣਾਓ।", newChat: "ਨਵੀਂ ਚੈਟ", searchPlaceholder: "ਚੈਟ ਲੱਭੋ...", voiceStart: "ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਕਰੋ", voiceStop: "ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਕਰੋ", voiceTranscribing: "ਲਿਖਿਆ ਜਾ ਰਿਹਾ ਹੈ...", voiceError: "ਆਡੀਓ ਰਿਕਾਰਡ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਮਾਈਕ੍ਰੋਫੋਨ ਅਨੁਮਤੀ ਚੈੱਕ ਕਰੋ।", noSpeech: "ਕੋਈ ਬੋਲੀ ਨਹੀਂ ਮਿਲੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।", copy: "ਕਾਪੀ ਕਰੋ", copied: "ਕਾਪੀ ਹੋ ਗਈ!" },
-    as: { welcome: "নমস্কাৰ! মই MyStudyDost। আপোনাৰ ব'ৰ্ড, শ্ৰেণী, বিষয় আৰু চেটৰ ভাষা বাছনি কৰক, তাৰ পিছত পাঠ্যক্ৰম, অধ্যায় বা প্ৰশ্ন সোধক।", placeholder: "আপোনাৰ প্ৰশ্ন ইয়াত লিখক...", typing: "ভাবি আছোঁ...", demo: "বেকএণ্ড AI এতিয়াও সংযুক্ত হোৱা নাই। মই আপোনাৰ প্ৰশ্ন বুজিছোঁ। পৰৱৰ্তী ধাপত প্ৰকৃত পাঠ্যক্ৰম/কিতাপৰ পৰা উত্তৰ পাব।", sourcePending: "উৎস: ছেটআপ বাকী", sourceDemo: "উৎস: ডেম' ম'ড", syllabus: "এই শ্ৰেণী আৰু বিষয়ৰ পাঠ্যক্ৰম দেখুৱাওক।", chapters: "এই বিষয়ৰ সকলো অধ্যায়ৰ তালিকা দিয়ক।", questions: "এই অধ্যায়ৰ গুৰুত্বপূৰ্ণ প্ৰশ্ন দিয়ক।", quiz: "এই অধ্যায়ৰ বাবে এটা সৰু কুইজ বনাওক।", newChat: "নতুন চেট", searchPlaceholder: "চেট সন্ধান কৰক...", voiceStart: "ৰেক'ৰ্ডিং আৰম্ভ কৰক", voiceStop: "ৰেক'ৰ্ডিং বন্ধ কৰক", voiceTranscribing: "লিখা হৈছে...", voiceError: "অ'ডি'য' ৰেক'ৰ্ড কৰিব নোৱাৰে। মাইক্ৰ'ফ'ন অনুমতি জাঁচ কৰক।", noSpeech: "কোনো ক'থ'ল'ভে নাই। দয়া কৰি ফেৰে প্ৰয়াস কৰক।", copy: "ক'পি কৰক", copied: "ক'পি হ'ল!" },
-    mai: { welcome: "प्रणाम! हम MyStudyDost छी। अपन बोर्ड, कक्षा, विषय आ चैट भाषा चुनू, फेर पाठ्यक्रम, अध्याय वा प्रश्न पूछू।", placeholder: "अपन प्रश्न एतय लिखू...", typing: "सोचि रहल छी...", demo: "बैकएंड AI अखन धरि जुड़ल नहि अछि। हमर अहाँक प्रश्न बुझि गेल। अगिला चरण मे असली पाठ्यक्रम/किताब सँ उत्तर भेटत।", sourcePending: "स्रोत: सेटअप बाकी", sourceDemo: "स्रोत: डेमो मोड", syllabus: "एहि कक्षा आ विषयक पाठ्यक्रम देखाउ।", chapters: "एहि विषयक सभ अध्याय बताउ।", questions: "एहि अध्यायक महत्वपूर्ण प्रश्न बताउ।", quiz: "एहि अध्यायक लेल एकटा छोट क्विज बनाउ।", newChat: "नय चेट", searchPlaceholder: "चेट खोजू...", voiceStart: "रिकार्डिंग सुरू करू", voiceStop: "रिकार्डिंग बन्द करू", voiceTranscribing: "लिखल जाइत अछि...", voiceError: "अडियो रिकार्ड नै भइल। माइक्रोफोन परमिशन जांचू।", noSpeech: "कउनो बोल नै भेटल। कृपया फेर कोशिश करू।", copy: "कापी करू", copied: "कापी भ गेल!" },
-    sa: { welcome: "नमस्ते! अहं MyStudyDost अस्मि। स्वस्य बोर्ड्, कक्षां, विषयं च सम्भाषणभाषां चिनोतु, ततः पाठ्यक्रमं, अध्यायान् वा प्रश्नान् पृच्छतु।", placeholder: "अत्र स्वप्रश्नं लिखतु...", typing: "चिन्तयामि...", demo: "पृष्ठभाग-AI अद्यापि न संयोजितम्। भवतः प्रश्नः अवगतः। अग्रिमे सोपाने वास्तविकपाठ्यक्रमात्/पुस्तकेभ्यः उत्तराणि लभ्यन्ते।", sourcePending: "स्रोतः: स्थापना शेषा", sourceDemo: "स्रोतः: प्रदर्शनविधिः", syllabus: "अस्याः कक्षायाः विषयस्य च पाठ्यक्रमं दर्शयतु।", chapters: "अस्य विषयस्य सर्वान् अध्यायान् सूचयतु।", questions: "अस्य अध्यायस्य महत्त्वपूर्णान् प्रश्नान् ददातु।", quiz: "अस्य अध्यायस्य कृते लघुप्रश्नोत्तरीं रचयतु।", newChat: "नवीनः वार्तालापः", searchPlaceholder: "वार्तालापान् अन्वेषयतु...", voiceStart: "अभिलेखनम् आरभ्यताम्", voiceStop: "अभिलेखनम् विरामयतु", voiceTranscribing: "लिख्यते...", voiceError: "शब्दरिकार्डिङं न शक्यम्। माइक्रोफोनानुमतिं परीक्ष्यताम्।", noSpeech: "कश्चिद् वाक्यं न लब्धवान्। कृपया पुनः प्रयत्नं कुर्यात्।", copy: "प्रतिलिपिं कुर्वन्तु", copied: "प्रतिलिपिः कृता!" }
+  const LANGUAGES = [
+    { code: 'auto', en: 'Auto-detect', native: 'Auto-detect' },
+    { code: 'en', en: 'English', native: 'English' },
+    { code: 'hi', en: 'Hindi', native: 'हिन्दी' },
+    { code: 'pa', en: 'Punjabi', native: 'ਪੰਜਾਬੀ' },
+    { code: 'ur', en: 'Urdu', native: 'اردو' },
+    { code: 'bn', en: 'Bengali', native: 'বাংলা' },
+    { code: 'mr', en: 'Marathi', native: 'मराठी' },
+    { code: 'gu', en: 'Gujarati', native: 'ગુજરાતી' },
+    { code: 'ta', en: 'Tamil', native: 'தமிழ்' },
+    { code: 'te', en: 'Telugu', native: 'తెలుగు' },
+    { code: 'ar', en: 'Arabic', native: 'العربية' },
+    { code: 'es', en: 'Spanish', native: 'Español' },
+    { code: 'fr', en: 'French', native: 'Français' },
+    { code: 'kn', en: 'Kannada', native: 'ಕನ್ನಡ' },
+    { code: 'ml', en: 'Malayalam', native: 'മലയാളം' },
+    { code: 'or', en: 'Odia', native: 'ଓଡ଼ିଆ' },
+    { code: 'as', en: 'Assamese', native: 'অসমীয়া' },
+    { code: 'mai', en: 'Maithili', native: 'मैथिली' },
+    { code: 'sa', en: 'Sanskrit', native: 'संस्कृतम्' },
+    { code: 'ne', en: 'Nepali', native: 'नेपाली' },
+    { code: 'si', en: 'Sinhala', native: 'සිංහල' },
+    { code: 'my', en: 'Burmese', native: 'မြန်မာဘာသာ' },
+    { code: 'zh', en: 'Chinese', native: '中文' },
+    { code: 'ja', en: 'Japanese', native: '日本語' },
+    { code: 'ko', en: 'Korean', native: '한국어' },
+    { code: 'de', en: 'German', native: 'Deutsch' },
+    { code: 'ru', en: 'Russian', native: 'Русский' },
+    { code: 'pt', en: 'Portuguese', native: 'Português' },
+    { code: 'it', en: 'Italian', native: 'Italiano' }
+  ];
+
+  const RTL_LANGS = new Set(['ar', 'ur', 'he', 'fa']);
+
+  const SPEECH_LANG = {
+    auto: 'hi-IN', en: 'en-IN', hi: 'hi-IN', pa: 'pa-IN', ur: 'ur-PK', bn: 'bn-IN',
+    mr: 'mr-IN', gu: 'gu-IN', ta: 'ta-IN', te: 'te-IN', ar: 'ar', es: 'es-ES', fr: 'fr-FR',
+    kn: 'kn-IN', ml: 'ml-IN', or: 'or-IN', as: 'as-IN', ne: 'ne-NP', zh: 'zh-CN',
+    ja: 'ja-JP', ko: 'ko-KR', de: 'de-DE', ru: 'ru-RU', pt: 'pt-BR', it: 'it-IT'
   };
 
-  // DOM Elements
-  const sidebar = document.getElementById('sidebar');
-  const chatPanel = document.getElementById('chatPanel');
-  const messages = document.getElementById('messages');
-  const welcomeMessage = document.getElementById('welcomeMessage');
-  const chatInput = document.getElementById('chatInput');
-  const sendBtn = document.getElementById('sendBtn');
-  const voiceBtn = document.getElementById('voiceBtn');
-  const voiceVisualizer = document.getElementById('voiceVisualizer');
-  const voiceTranscript = document.getElementById('voiceTranscript');
-  const chatList = document.getElementById('chatList');
-  const chatSearch = document.getElementById('chatSearch');
-  const newChatBtn = document.getElementById('newChatBtn');
-  const sidebarToggle = document.getElementById('sidebarToggle');
-  const closeSidebar = document.getElementById('closeSidebar');
-  const clearChatBtn = document.getElementById('clearChatBtn');
-  const boardSelect = document.getElementById('boardSelect');
-  const classSelect = document.getElementById('classSelect');
-  const subjectSelect = document.getElementById('subjectSelect');
-  const chatLanguage = document.getElementById('chatLanguage');
-  const currentChatTitle = document.getElementById('currentChatTitle');
-  const currentChatSubtitle = document.getElementById('currentChatSubtitle');
-  const welcomeText = document.getElementById('welcomeText');
+  let currentLang = 'en';
+  let currentTheme = 'system';
+  let isSidebarOpen = false;
+  let isLangDropdownOpen = false;
+  let isWelcomeMode = true;
+  let messageId = 0;
+  let synth = window.speechSynthesis;
+  let isSpeaking = false;
+  let currentChatId = null;
+  let conversation = [];
+  let lastQuestion = '';
+  let pendingAttachments = [];
 
-  // State
-  let chats = [];
-  let currentChatId = 'new';
-  let currentMessages = [];
-  let isRecording = false;
-  let mediaRecorder = null;
-  let audioChunks = [];
-  let audioBlob = null;
-  let recognition = null;
-  let currentTranscript = '';
-  let isProcessingVoice = false;
+  const qs = (sel) => document.querySelector(sel);
+  const qsa = (sel) => document.querySelectorAll(sel);
 
-  // Initialize
   function init() {
-    loadChats();
-    setupEventListeners();
-    applyLanguage();
-    renderChatList();
-    loadChat('new');
-    setupSpeechRecognition();
-    setupServiceWorker();
+    loadTheme();
+    loadLanguage();
+    renderLangList();
+    loadHistory();
+    bindEvents();
+    autoResizeTextareas();
+    checkDarkMode();
   }
 
-  // Load chats from localStorage
-  function loadChats() {
-    try {
-      const stored = localStorage.getItem('mystudydost_chats');
-      if (stored) {
-        chats = JSON.parse(stored);
-      }
-    } catch (e) {
-      chats = [];
+  function loadTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) {
+      currentTheme = saved;
+      document.documentElement.setAttribute('data-theme', saved === 'system' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : saved);
+    } else {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
     }
-    // Ensure we have at least the new chat placeholder
-    if (!chats.find(c => c.id === 'new')) {
-      chats.unshift({ id: 'new', title: 'New Chat', messages: [], createdAt: Date.now(), updatedAt: Date.now() });
+    updateThemeIcon();
+  }
+
+  function saveTheme() {
+    localStorage.setItem('theme', currentTheme);
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    currentTheme = next;
+    document.documentElement.setAttribute('data-theme', next);
+    saveTheme();
+    updateThemeIcon();
+  }
+
+  function updateThemeIcon() {}
+
+  function loadLanguage() {
+    const saved = localStorage.getItem('language');
+    if (saved) {
+      currentLang = saved;
     }
+    updateLangButton();
+    applyRTL();
   }
 
-  function saveChats() {
-    try {
-      localStorage.setItem('mystudydost_chats', JSON.stringify(chats));
-    } catch (e) {
-      console.error('Failed to save chats:', e);
-    }
+  function getApiLang() {
+    return currentLang === 'auto' ? 'en' : currentLang;
   }
 
-  // Get current language
-  function getLang() {
-    return (chatLanguage && chatLanguage.value) || 'en';
+  function applyRTL() {
+    const lang = LANGUAGES.find(l => l.code === currentLang);
+    const isRTL = lang && RTL_LANGS.has(lang.code);
+    document.dir = isRTL ? 'rtl' : 'ltr';
+    document.documentElement.lang = currentLang === 'auto' ? 'en' : currentLang;
   }
 
-  function t() {
-    return chatI18n[getLang()] || chatI18n.en;
+  function updateLangButton() {
+    const lang = LANGUAGES.find(l => l.code === currentLang) || LANGUAGES[0];
+    const btnText = qs('#langBtnText');
+    if (btnText) btnText.textContent = lang.en;
   }
 
-  // Apply language to UI
-  function applyLanguage() {
-    const tr = t();
-    if (welcomeText) welcomeText.textContent = tr.welcome;
-    if (chatInput) chatInput.placeholder = tr.placeholder;
-    if (chatSearch) chatSearch.placeholder = tr.searchPlaceholder;
-    document.querySelectorAll('.suggestion-btn').forEach(btn => {
-      const action = btn.dataset.action;
-      if (action && tr[action]) btn.textContent = tr[action];
-    });
-    updateVoiceButtonTitle();
-  }
+  function renderLangList() {
+    const list = qs('#langList');
+    const search = qs('#langSearch');
+    if (!list) return;
 
-  function updateVoiceButtonTitle() {
-    const tr = t();
-    if (voiceBtn) voiceBtn.title = isRecording ? tr.voiceStop : tr.voiceStart;
-  }
+    list.innerHTML = LANGUAGES.map(lang => `
+      <button class="lang-option${lang.code === currentLang ? ' selected' : ''}" data-code="${lang.code}" role="option" aria-selected="${lang.code === currentLang}">
+        <span class="lang-en">${lang.en}</span>
+        ${lang.code !== 'auto' ? `<span class="lang-native">${lang.native}</span>` : ''}
+      </button>
+    `).join('');
 
-  // Event Listeners
-  function setupEventListeners() {
-    // Sidebar toggle
-    sidebarToggle?.addEventListener('click', () => sidebar.classList.toggle('open'));
-    closeSidebar?.addEventListener('click', () => sidebar.classList.remove('open'));
-
-    // New chat
-    newChatBtn?.addEventListener('click', createNewChat);
-
-    // Clear chat
-    clearChatBtn?.addEventListener('click', clearCurrentChat);
-
-    // Chat search
-    chatSearch?.addEventListener('input', filterChatList);
-
-    // Chat list delegation
-    chatList?.addEventListener('click', (e) => {
-      const item = e.target.closest('.chat-item');
-      if (item) {
-        const chatId = item.dataset.chatId;
-        loadChat(chatId);
-        sidebar.classList.remove('open');
-      }
+    list.querySelectorAll('.lang-option').forEach(btn => {
+      btn.addEventListener('click', () => selectLanguage(btn.dataset.code));
     });
 
-    // Suggestion buttons
-    document.querySelectorAll('.suggestion-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const action = btn.dataset.action;
-        const tr = t();
-        const q = tr[action] || btn.textContent;
-        if (action === 'quiz') {
-          requestQuiz(q);
-        } else {
-          sendQuestion(q);
-        }
+    if (search) {
+      search.addEventListener('input', () => {
+        const term = search.value.toLowerCase().trim();
+        list.querySelectorAll('.lang-option').forEach(btn => {
+          const en = btn.querySelector('.lang-en').textContent.toLowerCase();
+          const native = btn.querySelector('.lang-native')?.textContent.toLowerCase() || '';
+          btn.style.display = (en.includes(term) || native.includes(term)) ? 'flex' : 'none';
+        });
       });
+    }
+  }
+
+  function selectLanguage(code) {
+    currentLang = code;
+    localStorage.setItem('language', code);
+    updateLangButton();
+    applyRTL();
+    closeLangDropdown();
+    renderLangList();
+  }
+
+  function openLangDropdown() {
+    isLangDropdownOpen = true;
+    qs('#langDropdown').hidden = false;
+    qs('#langBtn').setAttribute('aria-expanded', 'true');
+    qs('#langSelector').classList.add('open');
+    qs('#langSearch').focus();
+  }
+
+  function closeLangDropdown() {
+    isLangDropdownOpen = false;
+    qs('#langDropdown').hidden = true;
+    qs('#langBtn').setAttribute('aria-expanded', 'false');
+    qs('#langSelector').classList.remove('open');
+    qs('#langSearch').value = '';
+    qs('#langList').querySelectorAll('.lang-option').forEach(btn => btn.style.display = 'flex');
+  }
+
+  function toggleLangDropdown() {
+    if (isLangDropdownOpen) closeLangDropdown();
+    else openLangDropdown();
+  }
+
+  function timeLabel(iso) {
+    const d = new Date(iso);
+    if (isNaN(d)) return '';
+    const now = new Date();
+    if (d.toDateString() === now.toDateString()) {
+      return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    }
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  }
+
+  function groupKey(iso) {
+    const d = new Date(iso);
+    if (isNaN(d)) return 'week';
+    const now = new Date();
+    if (d.toDateString() === now.toDateString()) return 'today';
+    return (now - d) / 86400000 <= 7 ? 'week' : 'older';
+  }
+
+  function historyItemHtml(chat) {
+    const id = escapeHtml(chat.id);
+    const title = escapeHtml(chat.title || 'New Chat');
+    return `
+      <li class="history-item" role="option" data-id="${id}" tabindex="0" aria-label="${title}">
+        <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span class="history-title">${title}</span>
+        <span class="history-time">${escapeHtml(timeLabel(chat.updatedAt || chat.createdAt))}</span>
+        <button class="history-delete" data-delete-id="${id}" aria-label="Chat delete karein" title="Delete">
+          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </button>
+      </li>
+    `;
+  }
+
+  async function loadHistory() {
+    const todayList = qs('#historyToday');
+    const weekList = qs('#historyWeek');
+    const olderList = qs('#historyOlder');
+    if (!todayList || !weekList || !olderList) return;
+
+    try {
+      const res = await fetch('/api/chats');
+      const chats = res.ok ? await res.json() : [];
+      const groups = { today: [], week: [], older: [] };
+      chats.forEach(c => groups[groupKey(c.updatedAt || c.createdAt)].push(c));
+
+      todayList.innerHTML = groups.today.length
+        ? groups.today.map(historyItemHtml).join('')
+        : '<li class="history-empty">Aaj koi chat nahi</li>';
+      weekList.innerHTML = groups.week.map(historyItemHtml).join('') || '<li class="history-empty">Pichhle 7 din koi chat nahi</li>';
+      olderList.innerHTML = groups.older.map(historyItemHtml).join('') || '<li class="history-empty">Purani chat nahi</li>';
+    } catch (e) {
+      todayList.innerHTML = '';
+      weekList.innerHTML = '';
+      olderList.innerHTML = '';
+    }
+  }
+
+  async function openChat(id) {
+    try {
+      const res = await fetch('/api/chats/' + encodeURIComponent(id));
+      if (!res.ok) { showToast('Chat nahi mil payi'); return; }
+      const chat = await res.json();
+      currentChatId = chat.id;
+      conversation = (chat.messages || []).map(m => ({
+        role: m.role === 'assistant' ? 'assistant' : 'user',
+        content: m.content || '',
+        sources: m.sources || []
+      }));
+      lastQuestion = ([...conversation].reverse().find(m => m.role === 'user') || {}).content || '';
+      qs('#chatMessages').innerHTML = '';
+      switchToChatMode();
+      conversation.forEach(m => addMessage(m.role, m.content, false, m.sources, m.attachments));
+      closeSidebar();
+    } catch (e) {
+      showToast('Chat load nahi hui');
+    }
+  }
+
+  async function deleteChat(id) {
+    try {
+      await fetch('/api/chats/' + encodeURIComponent(id), { method: 'DELETE' });
+      if (currentChatId === id) newChat();
+      loadHistory();
+    } catch (e) {
+      showToast('Chat delete nahi hui');
+    }
+  }
+
+  async function persistStandalone(messages, title) {
+    try {
+      const res = await fetch('/api/chats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: (title || 'New Chat').slice(0, 48), board: '', class: '', subject: '', language: getApiLang() })
+      });
+      const data = await res.json();
+      await fetch('/api/chats/' + encodeURIComponent(data.id), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages })
+      });
+      loadHistory();
+    } catch (e) {
+      // ignore persistence errors for orphaned requests
+    }
+  }
+
+  async function persistConversation() {
+    try {
+      if (!currentChatId) {
+        const title = (lastQuestion || 'New Chat').slice(0, 48);
+        const res = await fetch('/api/chats', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, board: '', class: '', subject: '', language: getApiLang() })
+        });
+        const data = await res.json();
+        currentChatId = data.id;
+      }
+      await fetch('/api/chats/' + encodeURIComponent(currentChatId), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: conversation })
+      });
+      loadHistory();
+    } catch (e) {
+      // persistence failure should not block the chat itself
+    }
+  }
+
+  function bindEvents() {
+    qs('#hamburger')?.addEventListener('click', toggleSidebar);
+    qs('#scrim')?.addEventListener('click', closeSidebar);
+    qs('#backBtn')?.addEventListener('click', newChat);
+    qs('#newChatBtn')?.addEventListener('click', newChat);
+    qs('#themeToggle')?.addEventListener('click', toggleTheme);
+    qs('#langBtn')?.addEventListener('click', toggleLangDropdown);
+    qs('#langSearch')?.addEventListener('click', e => e.stopPropagation());
+
+    qs('.chat-history')?.addEventListener('click', (e) => {
+      const delBtn = e.target.closest('.history-delete');
+      if (delBtn) {
+        e.stopPropagation();
+        deleteChat(delBtn.dataset.deleteId);
+        return;
+      }
+      const item = e.target.closest('.history-item');
+      if (item && item.dataset.id) openChat(item.dataset.id);
     });
 
-    // Send message
-    sendBtn?.addEventListener('click', () => {
-      const q = chatInput.value.trim();
-      if (q) sendQuestion(q);
-    });
-
-    chatInput?.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+    qs('.chat-history')?.addEventListener('keydown', (e) => {
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('history-item')) {
         e.preventDefault();
-        const q = chatInput.value.trim();
-        if (q) sendQuestion(q);
+        openChat(e.target.dataset.id);
       }
     });
 
-    // Voice recording
-    voiceBtn?.addEventListener('click', toggleVoiceRecording);
+    document.addEventListener('click', (e) => {
+      if (isLangDropdownOpen && !qs('#langSelector').contains(e.target)) {
+        closeLangDropdown();
+      }
+      const menu = qs('#attachMenu');
+      if (menu && !menu.hidden && !e.target.closest('#attachMenu') && !e.target.closest('#attachBtn') && !e.target.closest('#attachBtnBottom')) {
+        closeAttachMenu();
+      }
+    });
 
-    // Study setup changes
-    [boardSelect, classSelect, subjectSelect, chatLanguage].forEach(el => {
-      el?.addEventListener('change', () => {
-        applyLanguage();
-        if (currentChatId !== 'new') {
-          saveCurrentChat();
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (activePanel) { closeOptionModal(); return; }
+        closeAttachMenu();
+        if (isSidebarOpen) closeSidebar();
+        if (isLangDropdownOpen) closeLangDropdown();
+      }
+    });
+
+    qsa('.card').forEach(card => {
+      card.addEventListener('click', () => {
+        if (card.dataset.card) { openOptionModal(card.dataset.card); return; }
+        const prompt = card.dataset.prompt;
+        if (prompt) {
+          switchToChatMode();
+          setComposerValue(prompt);
+          sendMessage(prompt);
         }
       });
     });
 
-    // Click outside sidebar to close on mobile
-    document.addEventListener('click', (e) => {
-      if (window.innerWidth <= 1024 && sidebar.classList.contains('open')) {
-        if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
-          sidebar.classList.remove('open');
+    qs('#modalClose')?.addEventListener('click', closeOptionModal);
+    qs('#modalCancel')?.addEventListener('click', closeOptionModal);
+    qs('#modalSubmit')?.addEventListener('click', submitOptionModal);
+    qs('#optionModal')?.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeOptionModal();
+    });
+    qs('#modalBody')?.addEventListener('click', (e) => {
+      const btn = e.target.closest('.choice');
+      if (!btn) return;
+      const group = btn.closest('.choice-group');
+      if (group) {
+        group.querySelectorAll('.choice').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        if (group.id === 'npSource') {
+          const wrap = qs('#npMaterialWrap');
+          if (wrap) wrap.hidden = btn.dataset.value !== 'material';
         }
       }
     });
+    qs('#modalBody')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+        e.preventDefault();
+        submitOptionModal();
+      }
+    });
+
+    qsa('.composer-textarea, .composer-bottom-textarea').forEach(ta => {
+      ta.addEventListener('input', autoResizeTextareas);
+      ta.addEventListener('input', updateSendButton);
+    });
+
+    qs('#composerCard')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const ta = qs('#composerTextarea');
+      sendMessage(ta.value.trim());
+    });
+
+    qs('#composerBottom')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const ta = qs('#composerBottomTextarea');
+      sendMessage(ta.value.trim());
+    });
+
+    qs('#sendBtn')?.addEventListener('click', () => {
+      const ta = qs('#composerTextarea');
+      sendMessage(ta.value.trim());
+    });
+
+    qs('#sendBtnBottom')?.addEventListener('click', () => {
+      const ta = qs('#composerBottomTextarea');
+      sendMessage(ta.value.trim());
+    });
+
+    qs('#fileInput')?.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files || []);
+      e.target.value = '';
+      if (files.length) uploadFiles(files);
+    });
+
+    qs('#attachBtn')?.addEventListener('click', (e) => toggleAttachMenu(e.currentTarget));
+    qs('#attachBtnBottom')?.addEventListener('click', (e) => toggleAttachMenu(e.currentTarget));
+    qs('#attachMenu')?.addEventListener('click', (e) => {
+      const item = e.target.closest('[data-attach-action]');
+      if (!item) return;
+      const action = item.dataset.attachAction;
+      closeAttachMenu();
+      if (action === 'file') qs('#fileInput')?.click();
+      else if (action === 'screenshot') captureScreenShot();
+    });
+
+    document.addEventListener('paste', handlePaste);
+
+    qs('#micBtn')?.addEventListener('click', handleMicClick);
+    qs('#micBtnBottom')?.addEventListener('click', handleMicClick);
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', checkDarkMode);
   }
 
-  // Chat Management
-  function createNewChat() {
-    const newChat = {
-      id: 'chat_' + Date.now(),
-      title: 'New Chat',
-      messages: [],
-      board: boardSelect?.value || 'CBSE',
-      klass: classSelect?.value || 'Class 1',
-      subject: subjectSelect?.value || 'Mathematics',
-      language: getLang(),
-      createdAt: Date.now(),
-      updatedAt: Date.now()
-    };
-    chats.unshift(newChat);
-    saveChats();
-    renderChatList();
-    loadChat(newChat.id);
-    sidebar.classList.remove('open');
+  function checkDarkMode() {
+    if (currentTheme === 'system') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+      updateThemeIcon();
+    }
   }
 
-  function loadChat(chatId) {
-    if (chatId === 'new') {
-      currentChatId = 'new';
-      currentMessages = [];
-      currentChatTitle.textContent = 'MyStudyDost';
-      currentChatSubtitle.textContent = 'Your free study companion';
-      showWelcomeMessage();
-      updateChatListActive('new');
+  function toggleSidebar() {
+    isSidebarOpen = !isSidebarOpen;
+    qs('#sidebar').classList.toggle('open', isSidebarOpen);
+    qs('#scrim').classList.toggle('visible', isSidebarOpen);
+    qs('#hamburger').setAttribute('aria-expanded', isSidebarOpen);
+    document.body.style.overflow = isSidebarOpen ? 'hidden' : '';
+  }
+
+  function closeSidebar() {
+    if (isSidebarOpen) {
+      isSidebarOpen = false;
+      qs('#sidebar').classList.remove('open');
+      qs('#scrim').classList.remove('visible');
+      qs('#hamburger').setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function newChat() {
+    isWelcomeMode = true;
+    currentChatId = null;
+    conversation = [];
+    lastQuestion = '';
+    pendingAttachments = [];
+    renderAttachPreview();
+    qs('#welcomeScreen').hidden = false;
+    qs('#chatMessages').hidden = true;
+    qs('#chatComposer').hidden = true;
+    qs('#backBtn').hidden = true;
+    qs('#chatMessages').innerHTML = '';
+    qs('#composerTextarea').value = '';
+    qs('#composerBottomTextarea').value = '';
+    autoResizeTextareas();
+    updateSendButton();
+    closeSidebar();
+  }
+
+  function switchToChatMode() {
+    if (isWelcomeMode) {
+      isWelcomeMode = false;
+      qs('#welcomeScreen').hidden = true;
+      qs('#chatMessages').hidden = false;
+      qs('#chatComposer').hidden = false;
+      qs('#backBtn').hidden = false;
+      qs('#composerTextarea').focus();
+    } else {
+      qs('#backBtn').hidden = false;
+    }
+  }
+
+  function setComposerValue(val) {
+    qs('#composerTextarea').value = val;
+    qs('#composerBottomTextarea').value = val;
+    autoResizeTextareas();
+    updateSendButton();
+  }
+
+  function updateSendButton() {
+    const val1 = qs('#composerTextarea').value.trim();
+    const val2 = qs('#composerBottomTextarea').value.trim();
+    const hasVal = val1 || val2 || pendingAttachments.length > 0;
+    qs('#sendBtn').disabled = !hasVal;
+    qs('#sendBtnBottom').disabled = !hasVal;
+  }
+
+  function autoResizeTextareas() {
+    qsa('.composer-textarea, .composer-bottom-textarea').forEach(ta => {
+      ta.style.height = 'auto';
+      const h = Math.min(ta.scrollHeight, 180);
+      ta.style.height = h + 'px';
+    });
+  }
+
+  function sendMessage(text) {
+    const atts = pendingAttachments.slice();
+    let question = (text || '').trim();
+    if (!question && atts.length) {
+      question = atts.some(a => a.kind === 'image') ? 'Is image ko analyze karke batao.' : 'Is file ko analyze karke summary dein.';
+    }
+    if (!question) return;
+    switchToChatMode();
+    lastQuestion = question;
+    const attMeta = atts.map(a => ({ name: a.name, kind: a.kind }));
+    addMessage('user', question, false, [], atts);
+    conversation.push({ role: 'user', content: question, attachments: attMeta });
+    const convoRef = conversation;
+    pendingAttachments = [];
+    renderAttachPreview();
+    qs('#composerTextarea').value = '';
+    qs('#composerBottomTextarea').value = '';
+    autoResizeTextareas();
+    updateSendButton();
+
+    const typingId = showTyping();
+    const sendAtts = atts.map(a => a.kind === 'image'
+      ? { name: a.name, kind: 'image', data: a.data }
+      : { name: a.name, kind: 'text', text: a.text });
+
+    fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, language: getApiLang(), attachments: sendAtts })
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Request failed');
+        return res.json();
+      })
+      .then(data => {
+        hideTyping(typingId);
+        const reply = data.answer || 'Maaf kijiye, jawab nahi mil paya.';
+        const sources = Array.isArray(data.sources) ? data.sources : [];
+        const assistantMsg = { role: 'assistant', content: reply, sources };
+        if (conversation === convoRef) {
+          addMessage('assistant', reply, true, sources);
+          conversation.push(assistantMsg);
+          persistConversation();
+        } else {
+          persistStandalone([...convoRef, assistantMsg], question);
+        }
+      })
+      .catch(() => {
+        hideTyping(typingId);
+        if (conversation === convoRef) {
+          addMessage('assistant', 'Maaf kijiye, abhi jawab nahi de pa raha hoon. Thodi der baad phir koshish karein.', false);
+        }
+      });
+  }
+
+  function showTyping() {
+    const id = 'typing-' + Date.now();
+    const el = document.createElement('div');
+    el.id = id;
+    el.className = 'message assistant typing';
+    el.innerHTML = `
+      <div class="message-avatar">M</div>
+      <div class="message-bubble typing-bubble">
+        <span class="typing-dots"><span></span><span></span><span></span></span>
+      </div>
+    `;
+    qs('#chatMessages').appendChild(el);
+    scrollToBottom();
+    return id;
+  }
+
+  function hideTyping(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  }
+
+  function renderMarkdown(src) {
+    let t = escapeHtml(String(src == null ? '' : src));
+    t = t.replace(/```([\s\S]*?)```/g, (m, code) => '<pre><code>' + code.replace(/^\n+|\n+$/g, '') + '</code></pre>');
+    t = t.replace(/(?:^|\n)((?:\|[^\n]*\|\n?){2,})/g, (m, block) => {
+      const rows = block.trim().split('\n').filter(l => l.trim() && !/^\|[\s\-:|]+\|$/.test(l.trim()));
+      if (!rows.length) return block;
+      const cells = rows.map(l => l.trim().split('|').slice(1, -1).map(c => c.trim()));
+      const head = cells[0];
+      const body = cells.slice(1);
+      return '\n<table><thead><tr>' + head.map(c => '<th>' + c + '</th>').join('') + '</tr></thead><tbody>' +
+        body.map(r => '<tr>' + r.map(c => '<td>' + c + '</td>').join('') + '</tr>').join('') +
+        '</tbody></table>\n';
+    });
+    t = t.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+    t = t.replace(/^####\s+(.*)$/gm, '<h4>$1</h4>');
+    t = t.replace(/^###\s+(.*)$/gm, '<h4>$1</h4>');
+    t = t.replace(/^##\s+(.*)$/gm, '<h3>$1</h3>');
+    t = t.replace(/^#\s+(.*)$/gm, '<h2>$1</h2>');
+    t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    t = t.replace(/(^|[\s(])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+    t = t.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    t = t.replace(/(?:^|\n)((?:- [^\n]*(?:\n|$))+)/g, (m, block) =>
+      '\n<ul>' + block.trim().split('\n').map(l => '<li>' + l.replace(/^- /, '') + '</li>').join('') + '</ul>\n');
+    t = t.replace(/(?:^|\n)((?:\d+\. [^\n]*(?:\n|$))+)/g, (m, block) =>
+      '\n<ol>' + block.trim().split('\n').map(l => '<li>' + l.replace(/^\d+\. /, '') + '</li>').join('') + '</ol>\n');
+    t = t.replace(/\n/g, '<br>');
+    return t;
+  }
+
+  // ---------- Option modal (card panels) ----------
+  const CLASS_OPTS = (() => {
+    let s = '';
+    for (let i = 1; i <= 12; i++) s += `<option>Class ${i}</option>`;
+    s += '<option>College</option>';
+    return s;
+  })();
+
+  const TRANSLATE_TARGETS = ['Hindi', 'English', 'Urdu', 'Punjabi', 'Bengali', 'Tamil', 'Telugu', 'Marathi', 'Gujarati', 'Malayalam', 'Kannada', 'Odia', 'Sanskrit', 'Arabic', 'Nepali', 'French', 'Spanish', 'German'];
+
+  const PANELS = {
+    notes: {
+      title: 'Notes banayein',
+      submitLabel: 'Notes banao',
+      html: `
+        <div class="field">
+          <label for="npTopic">Kis topic ke notes chahiye?</label>
+          <input id="npTopic" type="text" placeholder="Jaise: Photosynthesis, Mughal Empire, Quadratic Equations..." autocomplete="off" maxlength="300">
+        </div>
+        <div class="field">
+          <label>Material kaise denge?</label>
+          <div class="choice-group" id="npSource">
+            <button type="button" class="choice active" data-value="ai">
+              <span class="choice-title">AI khud banaye</span>
+              <span class="choice-desc">Sirf topic likhein — AI poore notes banayega</span>
+            </button>
+            <button type="button" class="choice" data-value="material">
+              <span class="choice-title">Apna material dunga</span>
+              <span class="choice-desc">Apne notes/text paste ya upload karein — usi par based notes banenge</span>
+            </button>
+          </div>
+        </div>
+        <div class="field" id="npMaterialWrap" hidden>
+          <label for="npMaterial">Apna material yahan paste karein</label>
+          <textarea id="npMaterial" maxlength="8000" placeholder="Textbook page, apne notes ya koi bhi study material yahan paste karein..."></textarea>
+          <button type="button" class="btn-file" id="npFileBtn">PDF / .txt / .md file upload karein</button>
+          <input type="file" id="npFile" accept=".txt,.md,.csv,.pdf" hidden>
+          <span class="field-hint">PDF aur text files dono support hain (8MB tak).</span>
+        </div>
+        <div class="field">
+          <label for="npFormat">Notes ka type</label>
+          <select id="npFormat">
+            <option value="short">Short notes (1 page)</option>
+            <option value="detailed" selected>Detailed notes</option>
+            <option value="points">Bullet-point revision points</option>
+          </select>
+        </div>`,
+      mount(body) {
+        const textarea = body.querySelector('#npMaterial');
+        const fileInput = body.querySelector('#npFile');
+        body.querySelector('#npFileBtn').addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => {
+          const f = fileInput.files && fileInput.files[0];
+          if (!f) return;
+          if (/\.pdf$/i.test(f.name)) {
+            const data = new FormData();
+            data.append('file', f, f.name);
+            fetch('/api/upload', { method: 'POST', body: data })
+              .then(res => res.json().then(d => ({ ok: res.ok, d })))
+              .then(({ ok, d }) => {
+                if (!ok) { showToast(d.detail || 'PDF padhne me problem hui'); return; }
+                textarea.value = (d.text || '').slice(0, 8000);
+              })
+              .catch(() => showToast('PDF upload me problem hui'));
+          } else {
+            f.text().then(t => { textarea.value = t.slice(0, 8000); }).catch(() => showToast('File padhne me problem hui'));
+          }
+        });
+      },
+      build(body) {
+        const topic = body.querySelector('#npTopic').value.trim();
+        if (!topic) return null;
+        const src = (body.querySelector('#npSource .choice.active') || {}).dataset?.value || 'ai';
+        const fmtKey = body.querySelector('#npFormat').value;
+        const fmt = { short: 'short notes (1 page)', detailed: 'detailed notes', points: 'bullet-point revision notes' }[fmtKey] || 'detailed notes';
+        if (src === 'material') {
+          const material = body.querySelector('#npMaterial').value.trim();
+          if (!material) return null;
+          return `Niche diye gaye material ke adhar par "${topic}" ke ${fmt} banao. Easy language me, important points highlight karke.\n\nMaterial:\n${material}`;
+        }
+        return `"${topic}" ke ${fmt} banao. Easy language me, exam ke liye useful points ke saath.`;
+      }
+    },
+    presentation: {
+      title: 'Presentation banayein',
+      submitLabel: 'Slides banao',
+      html: `
+        <div class="field">
+          <label for="ppTopic">Presentation ka topic kya hai?</label>
+          <input id="ppTopic" type="text" placeholder="Jaise: Digital Marketing, Solar Energy, My School..." autocomplete="off" maxlength="300">
+        </div>
+        <div class="modal-row">
+          <div class="field">
+            <label for="ppSlides">Kitne slides?</label>
+            <input id="ppSlides" type="number" min="3" max="20" value="8">
+          </div>
+          <div class="field">
+            <label for="ppStyle">Style</label>
+            <select id="ppStyle">
+              <option>Simple</option>
+              <option>Professional</option>
+              <option>Fun / Interactive</option>
+            </select>
+          </div>
+        </div>`,
+      build(body) {
+        const topic = body.querySelector('#ppTopic').value.trim();
+        if (!topic) return null;
+        let slides = parseInt(body.querySelector('#ppSlides').value, 10);
+        if (!(slides >= 3)) slides = 3; if (slides > 20) slides = 20;
+        const style = body.querySelector('#ppStyle').value;
+        return `"${topic}" par ${slides} slides ki presentation banayein. Style: ${style}. Har slide ka clear title, 3-5 short bullet points aur last mein ek summary slide.`;
+      }
+    },
+    maths: {
+      title: 'Maths hal karein',
+      submitLabel: 'Hal karo',
+      html: `
+        <div class="field">
+          <label for="mqProblem">Sawal yahan likhein</label>
+          <textarea id="mqProblem" placeholder="Jaise: x^2 - 5x + 6 = 0 hal karo, ya triangle ka area kya hoga..."></textarea>
+        </div>
+        <div class="field">
+          <label for="mqClass">Class (optional)</label>
+          <select id="mqClass">
+            <option value="">General</option>
+            ${CLASS_OPTS}
+          </select>
+        </div>`,
+      build(body) {
+        const problem = body.querySelector('#mqProblem').value.trim();
+        if (!problem) return null;
+        const klass = body.querySelector('#mqClass').value;
+        return `"${problem}" ko step-by-step hal karo, har step explain karke.${klass ? ` Yeh ${klass} ka sawal hai.` : ''}`;
+      }
+    },
+    writing: {
+      title: 'Likhne me madad',
+      submitLabel: 'Draft banao',
+      html: `
+        <div class="field">
+          <label for="wrType">Kya likhna hai?</label>
+          <select id="wrType">
+            <option>Email</option>
+            <option>Letter</option>
+            <option>Application</option>
+            <option>Social post / Caption</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="wrDetails">Details — konu ko, kis baat ke liye?</label>
+          <textarea id="wrDetails" placeholder="Jaise: Principal ko 3 din ki chhutti ke liye application — bukhar ho gaya hai..."></textarea>
+        </div>`,
+      build(body) {
+        const details = body.querySelector('#wrDetails').value.trim();
+        if (!details) return null;
+        const type = body.querySelector('#wrType').value;
+        return `Mere liye ${type.toLowerCase()} draft karo. Details: ${details}`;
+      }
+    },
+    translate: {
+      title: 'Translate karein',
+      submitLabel: 'Translate karo',
+      html: `
+        <div class="field">
+          <label for="trText">Translate karne wala text</label>
+          <textarea id="trText" placeholder="Yahaan text paste karein..."></textarea>
+        </div>
+        <div class="field">
+          <label for="trTarget">Kis bhasha me translate karein?</label>
+          <select id="trTarget">
+            ${TRANSLATE_TARGETS.map(l => `<option>${l}</option>`).join('')}
+          </select>
+        </div>`,
+      build(body) {
+        const text = body.querySelector('#trText').value.trim();
+        if (!text) return null;
+        const target = body.querySelector('#trTarget').value;
+        return `Is text ko ${target} me translate karo (source language auto-detect karein):\n\n${text}`;
+      }
+    },
+    syllabus: {
+      title: 'Syllabus dekhein',
+      submitLabel: 'Syllabus dikhao',
+      html: `
+        <div class="modal-row">
+          <div class="field">
+            <label for="syBoard">Board</label>
+            <select id="syBoard">
+              <option>CBSE</option>
+              <option>ICSE</option>
+              <option>HBSE / BSEH</option>
+              <option>State Board</option>
+              <option>Other / College</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="syClass">Class</label>
+            <select id="syClass">${CLASS_OPTS}</select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="sySubject">Subject</label>
+          <input id="sySubject" type="text" placeholder="Jaise: Mathematics, Science, Hindi, English..." autocomplete="off" maxlength="100">
+        </div>`,
+      build(body) {
+        const subject = body.querySelector('#sySubject').value.trim();
+        if (!subject) return null;
+        const board = body.querySelector('#syBoard').value;
+        const klass = body.querySelector('#syClass').value;
+        return `${board} board, ${klass}, ${subject} ka complete syllabus dikhao — important chapters aur exam weightage bhi batao.`;
+      }
+    }
+  };
+
+  let activePanel = null;
+
+  function openOptionModal(type) {
+    const cfg = PANELS[type];
+    if (!cfg) return;
+    activePanel = { type, lastFocus: document.activeElement };
+    qs('#modalTitle').textContent = cfg.title;
+    qs('#modalSubmit').textContent = cfg.submitLabel;
+    const body = qs('#modalBody');
+    body.innerHTML = cfg.html;
+    qs('#optionModal').hidden = false;
+    document.body.style.overflow = 'hidden';
+    if (cfg.mount) cfg.mount(body);
+    const first = body.querySelector('input, select, textarea');
+    (first || qs('#modalSubmit')).focus();
+  }
+
+  function closeOptionModal() {
+    qs('#optionModal').hidden = true;
+    qs('#modalBody').innerHTML = '';
+    document.body.style.overflow = '';
+    if (activePanel && activePanel.lastFocus && activePanel.lastFocus.focus) activePanel.lastFocus.focus();
+    activePanel = null;
+  }
+
+  function submitOptionModal() {
+    if (!activePanel) return;
+    const cfg = PANELS[activePanel.type];
+    const prompt = cfg.build(qs('#modalBody'));
+    if (!prompt) {
+      showToast('Pehle zaroori details bharein');
       return;
     }
-
-    const chat = chats.find(c => c.id === chatId);
-    if (!chat) return;
-
-    currentChatId = chatId;
-    currentMessages = chat.messages || [];
-    currentChatTitle.textContent = chat.title || 'Chat';
-    currentChatSubtitle.textContent = `${chat.board} • ${chat.klass} • ${chat.subject}`;
-
-    // Restore study setup
-    if (boardSelect) boardSelect.value = chat.board || 'CBSE';
-    if (classSelect) classSelect.value = chat.klass || 'Class 1';
-    if (subjectSelect) subjectSelect.value = chat.subject || 'Mathematics';
-    if (chatLanguage) {
-      chatLanguage.value = chat.language || 'en';
-      applyLanguage();
-    }
-
-    renderMessages();
-    updateChatListActive(chatId);
+    closeOptionModal();
+    switchToChatMode();
+    setComposerValue(prompt);
+    sendMessage(prompt);
   }
 
-  function saveCurrentChat() {
-    if (currentChatId === 'new') return;
-
-    const chatIndex = chats.findIndex(c => c.id === currentChatId);
-    if (chatIndex === -1) return;
-
-    const chat = chats[chatIndex];
-    chat.messages = currentMessages;
-    chat.board = boardSelect?.value || 'CBSE';
-    chat.klass = classSelect?.value || 'Class 1';
-    chat.subject = subjectSelect?.value || 'Mathematics';
-    chat.language = getLang();
-    chat.updatedAt = Date.now();
-
-    // Update title from first user message
-    const firstUserMsg = currentMessages.find(m => m.role === 'user');
-    if (firstUserMsg && chat.title === 'New Chat') {
-      chat.title = firstUserMsg.content.slice(0, 50) + (firstUserMsg.content.length > 50 ? '...' : '');
-    }
-
-    chats[chatIndex] = chat;
-    saveChats();
-    renderChatList();
-  }
-
-  function clearCurrentChat() {
-    if (currentChatId === 'new') return;
-
-    if (confirm('Clear this chat?')) {
-      currentMessages = [];
-      renderMessages();
-      saveCurrentChat();
+  function shortenUrl(url) {
+    try {
+      const u = new URL(url);
+      const host = u.hostname.replace(/^www\./, '');
+      const path = u.pathname.length > 24 ? u.pathname.slice(0, 24) + '…' : u.pathname;
+      return host + (path === '/' ? '' : path);
+    } catch (e) {
+      return url.length > 50 ? url.slice(0, 50) + '…' : url;
     }
   }
 
-  function deleteChat(chatId) {
-    if (chatId === 'new') return;
-    if (confirm('Delete this chat?')) {
-      chats = chats.filter(c => c.id !== chatId);
-      saveChats();
-      renderChatList();
-      if (currentChatId === chatId) {
-        loadChat('new');
+  function sourcesHtml(sources) {
+    if (!sources || !sources.length) return '';
+    const items = sources.slice(0, 5).map(s => {
+      const safe = escapeHtml(String(s));
+      if (/^https?:\/\//i.test(s)) {
+        return `<a class="source-item" href="${safe}" target="_blank" rel="noopener noreferrer">${escapeHtml(shortenUrl(String(s)))}</a>`;
       }
-    }
+      return `<span class="source-item">${safe}</span>`;
+    }).join('');
+    return `<div class="message-sources"><span class="sources-label">Sources</span>${items}</div>`;
   }
 
-  function filterChatList() {
-    const query = chatSearch.value.toLowerCase().trim();
-    const items = chatList.querySelectorAll('.chat-item:not([data-chat-id="new"])');
-    items.forEach(item => {
-      const title = item.querySelector('.chat-title').textContent.toLowerCase();
-      item.style.display = title.includes(query) ? 'flex' : 'none';
+  function attachmentsHtml(attachments) {
+    if (!attachments || !attachments.length) return '';
+    const imgs = [];
+    const files = [];
+    attachments.forEach(a => {
+      const name = escapeHtml(a.name || 'file');
+      if (a.kind === 'image' && a.data) {
+        imgs.push(`<img class="msg-image" src="${escapeHtml(a.data)}" alt="${name}">`);
+      } else {
+        files.push(`<span class="msg-attach-chip"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>${name}</span>`);
+      }
     });
+    return imgs.join('') + (files.length ? `<span class="msg-attach">${files.join('')}</span>` : '');
   }
 
-  function renderChatList() {
-    const newChatItem = chatList.querySelector('[data-chat-id="new"]');
-    chatList.innerHTML = '';
-    if (newChatItem) chatList.appendChild(newChatItem);
+  function addMessage(role, content, showVoicePrompt = false, sources = [], attachments = []) {
+    const id = 'msg-' + (++messageId);
+    const el = document.createElement('div');
+    el.id = id;
+    el.className = 'message ' + role;
 
-    chats.filter(c => c.id !== 'new').forEach(chat => {
-      const div = document.createElement('div');
-      div.className = 'chat-item' + (chat.id === currentChatId ? ' active' : '');
-      div.dataset.chatId = chat.id;
-      div.innerHTML = `
-        <div class="chat-item-content">
-          <svg class="chat-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-          </svg>
-          <span class="chat-title">${escapeHtml(chat.title || 'New Chat')}</span>
-        </div>
-        <span class="chat-time">${formatTime(chat.updatedAt)}</span>
-      `;
-      chatList.appendChild(div);
-    });
-    updateChatListActive(currentChatId);
-  }
-
-  function updateChatListActive(chatId) {
-    chatList.querySelectorAll('.chat-item').forEach(item => {
-      item.classList.toggle('active', item.dataset.chatId === chatId);
-    });
-  }
-
-  // Message Rendering
-  function showWelcomeMessage() {
-    messages.innerHTML = '';
-    messages.appendChild(welcomeMessage);
-    welcomeMessage.style.display = 'flex';
-  }
-
-  function hideWelcomeMessage() {
-    welcomeMessage.style.display = 'none';
-  }
-
-  function renderMessages() {
-    hideWelcomeMessage();
-    messages.innerHTML = '';
-    currentMessages.forEach(msg => appendMessageToDOM(msg, false));
-    scrollToBottom();
-  }
-
-  function appendMessageToDOM(msg, animate = true) {
-    const div = document.createElement('div');
-    div.className = 'message ' + msg.role;
-    if (animate) div.style.animation = 'fadeIn 200ms ease';
-
-    const avatar = msg.role === 'bot' ? 'M' : 'U';
-    const roleLabel = msg.role === 'bot' ? 'MyStudyDost' : 'You';
-
-    let contentHtml = '';
-
-    if (msg.type === 'voice') {
-      // Voice message with audio player and transcript
-      const audioUrl = msg.audioUrl || '';
-      const duration = msg.duration || 0;
-      const transcript = msg.transcript || '';
-      contentHtml = `
-        <div class="voice-message">
-          <div class="voice-player" data-audio="${escapeHtml(audioUrl)}" data-duration="${duration}">
-            <button class="play-btn" aria-label="Play voice message">
-              <svg class="play-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-              <svg class="pause-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-            </button>
-            <div class="wave-container">
-              <span class="wave"></span><span class="wave"></span><span class="wave"></span><span class="wave"></span><span class="wave"></span>
-            </div>
-            <span class="voice-time">${formatDuration(duration)}</span>
-          </div>
-          ${transcript ? `<div class="voice-transcript">${escapeHtml(transcript)}</div>` : ''}
-        </div>
+    if (role === 'user') {
+      el.innerHTML = `
+        <div class="message-bubble">${attachmentsHtml(attachments)}${escapeHtml(content)}</div>
       `;
     } else {
-      contentHtml = `<div class="message-bubble">${escapeHtml(msg.content)}</div>`;
-    }
-
-    // Sources
-    if (msg.sources && msg.sources.length > 0) {
-      contentHtml += '<div class="message-sources">' + msg.sources.slice(0, 3).map(s => `<span class="source-chip">${escapeHtml(s)}</span>`).join('') + '</div>';
-    }
-
-    div.innerHTML = `
-      <div class="message-avatar">${avatar}</div>
-      <div class="message-content">
-        <div class="message-header">
-          <span class="message-role">${roleLabel}</span>
-          <span class="message-time">${formatTime(msg.timestamp)}</span>
+      el.innerHTML = `
+        <div class="message-avatar">M</div>
+        <div class="message-bubble">${renderMarkdown(content)}</div>
+        <div class="message-actions">
+          <button class="action-btn" data-action="copy" aria-label="Copy"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+          <button class="action-btn" data-action="listen" aria-label="Suniye"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg></button>
+          <button class="action-btn" data-action="regenerate" aria-label="Regenerate"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button>
         </div>
-        ${contentHtml}
-      </div>
-    `;
-
-    messages.appendChild(div);
-
-    // Setup audio player if voice message
-    if (msg.type === 'voice') {
-      setupAudioPlayer(div.querySelector('.voice-player'));
+        ${sourcesHtml(sources)}
+        ${showVoicePrompt ? `
+        <div class="voice-prompt">
+          <span class="voice-prompt-text">Kya aap ise sunna chahte hain?</span>
+          <div class="voice-prompt-buttons">
+            <button class="voice-btn voice-btn-yes" data-action="speak-yes">Haan, suniye</button>
+            <button class="voice-btn voice-btn-no" data-action="speak-no">Nahi</button>
+          </div>
+        </div>
+        ` : ''}
+      `;
     }
 
+    qs('#chatMessages').appendChild(el);
     scrollToBottom();
+
+    el.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', () => handleAction(btn.dataset.action, el, content));
+    });
   }
 
-  function addMessage(role, content, options = {}) {
-    const msg = {
-      role,
-      content,
-      type: options.type || 'text',
-      timestamp: Date.now(),
-      ...options
-    };
-    currentMessages.push(msg);
-    appendMessageToDOM(msg);
-    saveCurrentChat();
-    return msg;
+  function handleAction(action, msgEl, content) {
+    const bubble = msgEl.querySelector('.message-bubble');
+    switch (action) {
+      case 'copy':
+        navigator.clipboard.writeText(content).then(() => {
+          showToast('Copied!');
+        });
+        break;
+      case 'listen':
+        speakText(content);
+        break;
+      case 'regenerate':
+        regenerateAnswer(msgEl);
+        break;
+      case 'speak-yes':
+        speakText(content);
+        msgEl.querySelector('.voice-prompt')?.remove();
+        break;
+      case 'speak-no':
+        msgEl.querySelector('.voice-prompt')?.remove();
+        break;
+    }
   }
 
-  function addBotMessage(content, sources = [], mode = 'rag') {
-    return addMessage('bot', content, { sources, mode });
-  }
-
-  function addUserMessage(content, options = {}) {
-    return addMessage('user', content, options);
-  }
-
-  function addTypingIndicator() {
-    const div = document.createElement('div');
-    div.className = 'message bot typing-indicator';
-    div.id = 'typingIndicator';
-    div.innerHTML = `
-      <div class="message-avatar">M</div>
-      <div class="message-content">
-        <div class="typing-indicator">
-          <span class="typing-dots"><span></span><span></span><span></span></span>
-          <span>${t().typing}</span>
-        </div>
-      </div>
-    `;
-    messages.appendChild(div);
-    scrollToBottom();
-    return div;
-  }
-
-  function removeTypingIndicator() {
-    const indicator = document.getElementById('typingIndicator');
-    if (indicator) indicator.remove();
-  }
-
-  // API Calls
-  async function sendQuestion(question) {
-    if (isProcessingVoice) return;
-
-    addUserMessage(question);
-    chatInput.value = '';
-    sendBtn.disabled = true;
-
-    const typingEl = addTypingIndicator();
-
+  async function regenerateAnswer(msgEl) {
+    if (!lastQuestion) return;
+    const oldSources = msgEl.querySelector('.message-sources');
+    const bubble = msgEl.querySelector('.message-bubble');
+    bubble.textContent = 'Regenerating...';
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          question,
-          board: boardSelect?.value || 'CBSE',
-          class: classSelect?.value || 'Class 1',
-          subject: subjectSelect?.value || 'Mathematics',
-          language: getLang()
-        })
+        body: JSON.stringify({ question: lastQuestion, language: getApiLang() })
       });
-
-      if (!res.ok) throw new Error('API error');
+      if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
-
-      typingEl.remove();
-      addBotMessage(data.answer || 'No answer available.', data.sources || [], data.mode || 'unknown');
-    } catch (e) {
-      typingEl.remove();
-      addBotMessage(t().demo, [], 'demo');
-    } finally {
-      sendBtn.disabled = false;
-      chatInput.focus();
-    }
-  }
-
-  async function requestQuiz(topic) {
-    if (isProcessingVoice) return;
-
-    addUserMessage(topic);
-    const typingEl = addTypingIndicator();
-
-    try {
-      const res = await fetch('/api/quiz', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          topic,
-          board: boardSelect?.value || 'CBSE',
-          class: classSelect?.value || 'Class 1',
-          subject: subjectSelect?.value || 'Mathematics',
-          language: getLang()
-        })
-      });
-
-      if (!res.ok) throw new Error('Quiz API error');
-      const data = await res.json();
-
-      typingEl.remove();
-      addBotMessage(data.quiz || 'No quiz available.', data.sources || [], data.mode || 'unknown');
-    } catch (e) {
-      typingEl.remove();
-      sendQuestion(topic);
-    }
-  }
-
-  // Voice Recording
-  async function toggleVoiceRecording() {
-    if (isRecording) {
-      stopRecording();
-    } else {
-      await startRecording();
-    }
-  }
-
-  async function startRecording() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
-      mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
-      audioChunks = [];
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunks.push(e.data);
-      };
-
-      mediaRecorder.onstop = async () => {
-        audioBlob = new Blob(audioChunks, { type: 'audio/webm;codecs=opus' });
-        stream.getTracks().forEach(t => t.stop());
-        await processVoiceMessage();
-      };
-
-      mediaRecorder.start(100);
-      isRecording = true;
-      voiceBtn.classList.add('recording');
-      voiceVisualizer.classList.add('active');
-      updateVoiceButtonTitle();
-      startSpeechRecognition();
-    } catch (e) {
-      console.error('Recording error:', e);
-      showVoiceTranscript(t().voiceError, true);
-    }
-  }
-
-  function stopRecording() {
-    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-      mediaRecorder.stop();
-    }
-    isRecording = false;
-    voiceBtn.classList.remove('recording');
-    voiceVisualizer.classList.remove('active');
-    updateVoiceButtonTitle();
-    stopSpeechRecognition();
-  }
-
-  async function processVoiceMessage() {
-    isProcessingVoice = true;
-    showVoiceTranscript(t().voiceTranscribing, false);
-
-    // Create audio URL
-    const audioUrl = URL.createObjectURL(audioBlob);
-    const duration = await getAudioDuration(audioBlob);
-
-    // Add user voice message
-    const userMsg = addUserMessage('', {
-      type: 'voice',
-      audioUrl,
-      duration,
-      transcript: currentTranscript || undefined
-    });
-
-    // Send transcript as question if available
-    if (currentTranscript && currentTranscript.trim()) {
-      const question = currentTranscript.trim();
-      currentTranscript = '';
-      hideVoiceTranscript();
-
-      const typingEl = addTypingIndicator();
-
-      try {
-        const res = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            question,
-            board: boardSelect?.value || 'CBSE',
-            class: classSelect?.value || 'Class 1',
-            subject: subjectSelect?.value || 'Mathematics',
-            language: getLang()
-          })
-        });
-
-        if (!res.ok) throw new Error('API error');
-        const data = await res.json();
-
-        typingEl.remove();
-        addBotMessage(data.answer || 'No answer available.', data.sources || [], data.mode || 'unknown');
-      } catch (e) {
-        typingEl.remove();
-        addBotMessage(t().demo, [], 'demo');
+      const reply = data.answer || 'Nahi ho paaya, phir koshish karein.';
+      bubble.innerHTML = renderMarkdown(reply);
+      if (oldSources) oldSources.remove();
+      const sources = Array.isArray(data.sources) ? data.sources : [];
+      if (sources.length) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = sourcesHtml(sources);
+        msgEl.querySelector('.message-actions').after(tmp.firstElementChild);
       }
-    } else {
-      hideVoiceTranscript();
-      showVoiceTranscript(t().noSpeech, true);
-      // Remove the voice message if no transcript
-      currentMessages.pop();
-      messages.lastChild?.remove();
-      saveCurrentChat();
-    }
-
-    isProcessingVoice = false;
-  }
-
-  function getAudioDuration(blob) {
-    return new Promise((resolve) => {
-      const audio = new Audio(URL.createObjectURL(blob));
-      audio.addEventListener('loadedmetadata', () => {
-        resolve(Math.round(audio.duration));
-      });
-      audio.addEventListener('error', () => resolve(0));
-    });
-  }
-
-  // Speech Recognition
-  function setupSpeechRecognition() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      console.warn('Speech recognition not supported');
-      voiceBtn.style.display = 'none';
-      return;
-    }
-
-    recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = getSpeechLang(getLang());
-
-    recognition.onresult = (event) => {
-      let finalTranscript = '';
-      let interimTranscript = '';
-
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalTranscript += transcript;
-        } else {
-          interimTranscript += transcript;
+      for (let i = conversation.length - 1; i >= 0; i--) {
+        if (conversation[i].role === 'assistant') {
+          conversation[i] = { role: 'assistant', content: reply, sources };
+          break;
         }
       }
-
-      currentTranscript = finalTranscript || interimTranscript;
-      showVoiceTranscript(currentTranscript, false);
-    };
-
-    recognition.onerror = (event) => {
-      console.error('Speech recognition error:', event.error);
-      if (event.error !== 'no-speech') {
-        showVoiceTranscript(t().voiceError, true);
-      }
-    };
-
-    recognition.onend = () => {
-      if (isRecording) {
-        // Restart if still recording
-        try { recognition.start(); } catch (e) {}
-      }
-    };
-  }
-
-  function getSpeechLang(lang) {
-    const map = {
-      'en': 'en-IN', 'hi': 'hi-IN', 'bn': 'bn-IN', 'te': 'te-IN',
-      'mr': 'mr-IN', 'ta': 'ta-IN', 'ur': 'ur-IN', 'gu': 'gu-IN',
-      'kn': 'kn-IN', 'ml': 'ml-IN', 'or': 'or-IN', 'pa': 'pa-IN',
-      'as': 'as-IN', 'mai': 'hi-IN', 'sa': 'sa-IN'
-    };
-    return map[lang] || 'en-IN';
-  }
-
-  function startSpeechRecognition() {
-    if (recognition) {
-      recognition.lang = getSpeechLang(getLang());
-      try { recognition.start(); } catch (e) {}
+      persistConversation();
+    } catch (e) {
+      bubble.textContent = 'Nahi ho paaya, phir koshish karein.';
     }
   }
 
-  function stopSpeechRecognition() {
-    if (recognition) {
-      try { recognition.stop(); } catch (e) {}
+  function speakText(text) {
+    if (!synth) return;
+    if (isSpeaking) {
+      synth.cancel();
+      isSpeaking = false;
     }
+
+    const cleanText = text
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\*(.*?)\*/g, '$1')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/#{1,6}\s/g, '')
+      .replace(/\[.*?\]\(.*?\)/g, '')
+      .replace(/https?:\/\/\S+/g, '')
+      .replace(/\$\$.*?\$\$/g, 'formula')
+      .replace(/\$.*?\$/g, 'formula')
+      .trim();
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    const lang = LANGUAGES.find(l => l.code === currentLang);
+    const fallback = SPEECH_LANG[currentLang] || 'en-IN';
+    utterance.lang = lang ? (lang.code === 'auto' ? 'hi-IN' : (lang.code + '-IN')) : fallback;
+    utterance.rate = 1;
+    utterance.pitch = 1;
+
+    utterance.onstart = () => { isSpeaking = true; };
+    utterance.onend = () => { isSpeaking = false; };
+    utterance.onerror = () => { isSpeaking = false; };
+
+    synth.speak(utterance);
   }
 
-  // Voice Transcript UI
-  function showVoiceTranscript(text, isError) {
-    voiceTranscript.textContent = text;
-    voiceTranscript.className = 'voice-transcript' + (isError ? ' error' : '');
-    voiceTranscript.style.display = 'block';
-  }
+  function showToast(msg) {
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
 
-  function hideVoiceTranscript() {
-    voiceTranscript.style.display = 'none';
-    voiceTranscript.textContent = '';
-  }
-
-  // Audio Player
-  function setupAudioPlayer(playerEl) {
-    const audioUrl = playerEl.dataset.audio;
-    const playBtn = playerEl.querySelector('.play-btn');
-    const playIcon = playerEl.querySelector('.play-icon');
-    const pauseIcon = playerEl.querySelector('.pause-icon');
-    const waveContainer = playerEl.querySelector('.wave-container');
-
-    let audio = new Audio(audioUrl);
-    let isPlaying = false;
-
-    playBtn.addEventListener('click', () => {
-      if (isPlaying) {
-        audio.pause();
-      } else {
-        audio.play();
-      }
-    });
-
-    audio.addEventListener('play', () => {
-      isPlaying = true;
-      playBtn.classList.add('playing');
-      playIcon.style.display = 'none';
-      pauseIcon.style.display = 'block';
-      waveContainer.classList.add('playing');
-    });
-
-    audio.addEventListener('pause', () => {
-      isPlaying = false;
-      playBtn.classList.remove('playing');
-      playIcon.style.display = 'block';
-      pauseIcon.style.display = 'none';
-      waveContainer.classList.remove('playing');
-    });
-
-    audio.addEventListener('ended', () => {
-      isPlaying = false;
-      playBtn.classList.remove('playing');
-      playIcon.style.display = 'block';
-      pauseIcon.style.display = 'none';
-      waveContainer.classList.remove('playing');
-    });
-
-    audio.addEventListener('error', () => {
-      console.error('Audio playback error');
-    });
-  }
-
-  // Utilities
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  function formatTime(timestamp) {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diff = now - date;
-
-    if (diff < 60000) return 'Just now';
-    if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
-    if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
-    if (diff < 604800000) return Math.floor(diff / 86400000) + 'd ago';
-
-    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-  }
-
-  function formatDuration(seconds) {
-    if (!seconds || seconds < 0) return '0:00';
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = msg;
+    toast.style.cssText = `
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--color-text); color: var(--color-white);
+      padding: 12px 24px; border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg); z-index: 1000;
+      animation: slideUp 0.3s ease;
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.style.animation = 'slideUp 0.3s ease reverse';
+      setTimeout(() => toast.remove(), 300);
+    }, 2000);
   }
 
   function scrollToBottom() {
-    messages.scrollTop = messages.scrollHeight;
+    const area = qs('#chatMessages');
+    if (area) area.scrollTop = area.scrollHeight;
   }
 
-  // Service Worker
-  function setupServiceWorker() {
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/static/sw.js').catch(() => {});
-      });
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text == null ? '' : String(text);
+    return div.innerHTML;
+  }
+
+  function renderAttachPreview() {
+    const containers = [qs('#attachPreview'), qs('#attachPreviewBottom')];
+    const html = pendingAttachments.map(a => `
+      <span class="attach-chip">
+        ${a.kind === 'image' && a.data
+          ? `<img src="${escapeHtml(a.data)}" alt="${escapeHtml(a.name)}">`
+          : `<span class="attach-chip-icon"><svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>`}
+        <span class="name">${escapeHtml(a.name)}</span>
+        <button type="button" class="attach-chip-remove" data-remove-idx="${pendingAttachments.indexOf(a)}" aria-label="Remove ${escapeHtml(a.name)}">
+          <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </span>
+    `).join('');
+    containers.forEach(c => { if (c) { c.innerHTML = html; } });
+    qsa('.attach-chip-remove').forEach(btn => btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.removeIdx, 10);
+      if (!isNaN(idx)) { pendingAttachments.splice(idx, 1); renderAttachPreview(); updateSendButton(); }
+    }));
+  }
+
+  async function uploadFiles(files) {
+    for (const file of files) {
+      const data = new FormData();
+      data.append('file', file, file.name);
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: data });
+        const d = await res.json();
+        if (!res.ok) { showToast(d.detail || 'File upload nahi hui'); continue; }
+        pendingAttachments.push({ name: d.name || file.name, kind: d.kind, data: d.data || '', text: d.text || '', size: d.size || file.size });
+      } catch (e) {
+        showToast('Upload me problem aayi');
+      }
+    }
+    if (pendingAttachments.length > 6) pendingAttachments = pendingAttachments.slice(-6);
+    renderAttachPreview();
+    updateSendButton();
+  }
+
+  function handlePaste(e) {
+    const items = (e.clipboardData && e.clipboardData.items) || [];
+    const files = [];
+    for (const item of items) {
+      if (item.kind === 'file') {
+        const f = item.getAsFile();
+        if (f) files.push(new File([f], f.name || ('paste-' + Date.now() + '.png'), { type: f.type || 'image/png' }));
+      }
+    }
+    if (files.length) {
+      e.preventDefault();
+      uploadFiles(files);
+      showToast('Image attach ho gayi');
     }
   }
 
-  // Initialize on DOM ready
+  async function captureScreenShot() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+      showToast('Is browser me screen capture support nahi hai');
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      video.muted = true;
+      await video.play();
+      await new Promise(r => setTimeout(r, 250));
+      const track = stream.getVideoTracks()[0];
+      const settings = track.getSettings ? track.getSettings() : {};
+      const canvas = document.createElement('canvas');
+      canvas.width = settings.width || video.videoWidth || 1280;
+      canvas.height = settings.height || video.videoHeight || 720;
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      stream.getTracks().forEach(t => t.stop());
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      if (blob) {
+        await uploadFiles([new File([blob], 'screenshot-' + Date.now() + '.png', { type: 'image/png' })]);
+        showToast('Screenshot attach ho gaya');
+      }
+    } catch (e) {
+      if (e && (e.name === 'NotAllowedError' || e.name === 'AbortError')) showToast('Screenshot cancel hua');
+      else showToast('Screenshot nahi le pa rahe');
+    }
+  }
+
+  function toggleAttachMenu(btn) {
+    const menu = qs('#attachMenu');
+    if (!menu) return;
+    if (menu.hidden) {
+      const rect = btn.getBoundingClientRect();
+      menu.style.left = Math.max(8, Math.min(window.innerWidth - 270, rect.left)) + 'px';
+      menu.style.bottom = (window.innerHeight - rect.top + 10) + 'px';
+      menu.style.top = 'auto';
+      menu.hidden = false;
+    } else {
+      closeAttachMenu();
+    }
+  }
+
+  function closeAttachMenu() {
+    const menu = qs('#attachMenu');
+    if (menu) menu.hidden = true;
+  }
+
+  function handleMicClick() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      showToast('Is browser me voice input support nahi hai');
+      return;
+    }
+    try {
+      const rec = new SR();
+      rec.lang = SPEECH_LANG[currentLang] || 'hi-IN';
+      rec.interimResults = false;
+      rec.maxAlternatives = 1;
+      showToast('Bolna shuru karein...');
+      rec.onresult = (e) => {
+        const transcript = (e.results && e.results[0] && e.results[0][0].transcript) || '';
+        const text = transcript.trim();
+        if (text) sendMessage(text);
+        else showToast('Kuch sunayi nahi diya, phir koshish karein');
+      };
+      rec.onerror = () => showToast('Voice input nahi ho paaya');
+      rec.start();
+    } catch (e) {
+      showToast('Voice input nahi ho paaya');
+    }
+  }
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .typing-bubble { display: flex; align-items: center; gap: 4px; padding: 8px 12px; }
+    .typing-dots { display: flex; gap: 4px; }
+    .typing-dots span { width: 8px; height: 8px; background: var(--color-accent); border-radius: 50%; animation: bounce 1.4s ease-in-out infinite both; }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%, 80%, 100% { transform: scale(0.8); } 40% { transform: scale(1.2); } }
+    .history-time { font-size: 11px; color: var(--color-text-muted); margin-left: auto; white-space: nowrap; }
+    [dir="rtl"] .history-time { margin-left: 0; margin-right: auto; }
+    .history-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .history-delete { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: var(--radius-sm); color: var(--color-text-muted); opacity: 0; flex-shrink: 0; transition: opacity var(--transition-fast), background var(--transition-fast), color var(--transition-fast); }
+    .history-delete:hover { background: var(--color-chips); color: var(--color-text); }
+    .history-item:hover .history-delete, .history-item:focus-within .history-delete { opacity: 1; }
+    @media (max-width: 1023px) { .history-delete { opacity: 1; } }
+    .history-empty { font-size: 12px; color: var(--color-text-muted); padding: 6px 12px; }
+    .message-sources { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; margin-top: 8px; padding-left: 42px; font-size: 12px; color: var(--color-text-muted); }
+    .message-sources .sources-label { font-weight: 600; }
+    .message-sources .source-item { color: var(--color-accent); }
+    a.source-item:hover { text-decoration: underline; }
+    [dir="rtl"] .message-sources { padding-left: 0; padding-right: 42px; }
+    @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(16px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+  `;
+  document.head.appendChild(style);
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {

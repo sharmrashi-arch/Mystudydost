@@ -1,6 +1,6 @@
 # MyStudyDost
 
-Free study assistant app for students (CBSE, HBSE aur aage aur boards). Goal: jin students ke paas books/resources nahi hain unhe free me syllabus, chapters, explanations, questions aur quiz mil sake.
+AI assistant for every kind of question - studies, work, writing, maths, translation, photos, presentations, and more. 100+ languages supported.
 
 ## Abhi tak kya bana (Step 1 foundation)
 - Project folder structure
@@ -30,5 +30,5 @@ Open: http://127.0.0.1:8000
 
 ## Suraksha
 - Keys sirf `.env` me, frontend me nahi
-- Sirf official/free sources use karo aur source dikhाओ
+- Sirf official/free sources use karo aur source dikhào
 - Galat/unknown info invent mat karo

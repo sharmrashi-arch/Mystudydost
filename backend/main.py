@@ -1,8 +1,9 @@
-﻿import json
+﻿import base64
+import json
 import uuid
 from pathlib import Path
 from datetime import datetime
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -28,9 +29,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-if FRONTEND_DIR.exists():
-    app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
-
 
 # Chat history storage
 def load_chats():
@@ -49,6 +47,13 @@ def save_chats(chats):
         json.dump(chats, f, ensure_ascii=False, indent=2)
 
 
+class Attachment(BaseModel):
+    name: str = ""
+    kind: str = ""
+    data: str = ""
+    text: str = ""
+
+
 class ChatRequest(BaseModel):
     question: str = Field(..., min_length=1, max_length=MAX_QUESTION_LENGTH)
     board: str = ""
@@ -56,6 +61,7 @@ class ChatRequest(BaseModel):
     subject: str = ""
     language: str = "en"
     chapter: str = ""
+    attachments: list[Attachment] = Field(default_factory=list)
 
     model_config = {"populate_by_name": True}
 
@@ -73,10 +79,12 @@ class QuizRequest(BaseModel):
 
 class ChatCreate(BaseModel):
     title: str = "New Chat"
-    board: str = "CBSE"
-    klass: str = "Class 1"
-    subject: str = "Mathematics"
+    board: str = ""
+    klass: str = Field(default="", alias="class")
+    subject: str = ""
     language: str = "en"
+
+    model_config = {"populate_by_name": True}
 
 
 class ChatUpdate(BaseModel):
@@ -185,16 +193,65 @@ def delete_chat(chat_id: str):
     return {"status": "deleted"}
 
 
+@app.post("/api/upload")
+async def upload(file: UploadFile = File(...)):
+    name = (file.filename or "file").strip() or "file"
+    ext = name.rsplit(".", 1)[-1].lower() if "." in name else ""
+    raw = await file.read()
+    if len(raw) > 8 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="File 8MB se badi hai")
+
+    image_exts = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg", "webp": "image/webp", "gif": "image/gif"}
+    text_exts = {"txt", "md", "csv", "json", "log"}
+
+    if ext in image_exts:
+        if len(raw) > 4 * 1024 * 1024:
+            raise HTTPException(status_code=413, detail="Image 4MB se badi hai")
+        mime = image_exts[ext]
+        return {"name": name, "kind": "image", "data": "data:%s;base64,%s" % (mime, base64.b64encode(raw).decode()), "size": len(raw)}
+
+    if ext in text_exts:
+        text = raw.decode("utf-8", errors="replace")[:8000]
+        return {"name": name, "kind": "text", "text": text, "size": len(raw)}
+
+    if ext == "pdf":
+        try:
+            import fitz
+            doc = fitz.open(stream=raw, filetype="pdf")
+            parts, total = [], 0
+            for page in doc:
+                parts.append(page.get_text())
+                total += len(parts[-1])
+                if total > 9000:
+                    break
+            text = "\n".join(parts)[:8000]
+        except Exception:
+            raise HTTPException(status_code=400, detail="PDF padhne me problem hui")
+        if not text.strip():
+            raise HTTPException(status_code=400, detail="PDF se text nahi mila (scanned/image PDF abhi support nahi)")
+        return {"name": name, "kind": "text", "text": text, "size": len(raw)}
+
+    raise HTTPException(status_code=415, detail="Unsupported file type — image, .txt/.md/.csv ya PDF bhejein")
+
+
 @app.post("/api/chat")
 def chat(req: ChatRequest):
     topic_bits = [getattr(req, "board", "") or "", getattr(req, "klass", "") or "", getattr(req, "subject", "") or "", getattr(req, "chapter", "") or "", getattr(req, "question", "")]
     question = " | ".join([b for b in topic_bits if b]).strip()
+
+    atts = list(getattr(req, "attachments", []) or [])
+    text_parts = ["[File: %s]\n%s" % (a.name or "file", a.text) for a in atts if a.kind == "text" and a.text][:3]
+    if text_parts:
+        question = question + "\n\n" + "\n\n".join(text_parts) if question else "\n\n".join(text_parts)
+    images = [a.data for a in atts if a.kind == "image" and a.data.startswith("data:image/")][:2]
+
     result = answer_question(
         question=question or getattr(req, "question", ""),
         board=getattr(req, "board", "") or "",
         klass=getattr(req, "klass", "") or "",
         subject=getattr(req, "subject", "") or "",
         language=getattr(req, "language", "en") or "en",
+        images=images or None,
     )
     return {"answer": result.get("answer", ""), "sources": result.get("sources", []), "mode": result.get("mode", "unknown")}
 
@@ -212,17 +269,11 @@ def quiz(req: QuizRequest):
     return {"quiz": result.get("quiz", ""), "sources": result.get("sources", []), "mode": result.get("mode", "unknown")}
 
 
-@app.get("/")
-def index():
-    index_file = FRONTEND_DIR / "index.html"
-    if index_file.exists():
-        return FileResponse(str(index_file))
-    return {"message": "%s backend running. Frontend not found yet." % APP_NAME}
+@app.get("/api/health")
+def health():
+    return {"status": "ok", "app": APP_NAME, "env": APP_ENV}
 
 
-@app.get("/chat")
-def chat_page():
-    chat_file = FRONTEND_DIR / "chat.html"
-    if chat_file.exists():
-        return FileResponse(str(chat_file))
-    return {"message": "Chat page not found yet."}
+# Serve frontend at root (must be AFTER all /api routes)
+if FRONTEND_DIR.exists():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")

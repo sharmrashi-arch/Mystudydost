@@ -2,12 +2,12 @@
 from pathlib import Path
 
 try:
-    from .config import DB_DIR, RETRIEVAL_TOP_K, DISTANCE_THRESHOLD, SOURCES_PATH
+    from .config import DB_DIR, RETRIEVAL_TOP_K, DISTANCE_THRESHOLD, SOURCES_PATH, GROQ_VISION_MODEL
     from .prompts import build_system_prompt, build_rag_prompt, build_quiz_prompt
     from .groq_client import generate_answer, demo_answer, has_groq
     from .serp_client import serp_search
 except ImportError:
-    from config import DB_DIR, RETRIEVAL_TOP_K, DISTANCE_THRESHOLD, SOURCES_PATH
+    from config import DB_DIR, RETRIEVAL_TOP_K, DISTANCE_THRESHOLD, SOURCES_PATH, GROQ_VISION_MODEL
     from prompts import build_system_prompt, build_rag_prompt, build_quiz_prompt
     from groq_client import generate_answer, demo_answer, has_groq
     from serp_client import serp_search
@@ -97,7 +97,7 @@ def retrieve(query, board="", klass="", subject="", k=RETRIEVAL_TOP_K):
     return contexts, sources
 
 
-def answer_question(question, board="", klass="", subject="", language="en"):
+def answer_question(question, board="", klass="", subject="", language="en", images=None):
     q = (question or "").strip()
     if not q:
         return {"answer": "Question is empty.", "sources": [], "mode": "error"}
@@ -120,7 +120,21 @@ def answer_question(question, board="", klass="", subject="", language="en"):
         return {"answer": demo_answer(q, sources=sources, reason="GROQ key missing"), "sources": sources[:5], "mode": "demo"}
 
     system = build_system_prompt(language)
-    user = build_rag_prompt(q, contexts, language)
+    user_text = build_rag_prompt(q, contexts, language)
+    if images:
+        content = [{"type": "text", "text": user_text}] + [
+            {"type": "image_url", "image_url": {"url": img}} for img in images
+        ]
+        try:
+            answer = generate_answer([{"role": "system", "content": system}, {"role": "user", "content": content}], model=GROQ_VISION_MODEL)
+        except Exception as e:
+            if not sources:
+                sources = _load_source_hints()
+            return {"answer": demo_answer(q, sources=sources, reason="Groq vision error: %s" % e), "sources": sources[:5], "mode": "demo"}
+        if not sources:
+            sources = _load_source_hints()
+        return {"answer": answer, "sources": sources[:5], "mode": "vision"}
+    user = user_text
     try:
         answer = generate_answer([{"role": "system", "content": system}, {"role": "user", "content": user}])
     except Exception as e:

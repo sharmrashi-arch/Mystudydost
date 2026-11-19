@@ -8,14 +8,14 @@ def has_groq():
     return bool(GROQ_API_KEY and GROQ_API_KEY != "your_groq_api_key_here")
 
 
-def generate_answer(messages, temperature=0.2, max_tokens=900):
+def generate_answer(messages, temperature=0.2, max_tokens=900, model=None):
     if not has_groq():
         raise RuntimeError("GROQ_API_KEY not configured")
     from groq import Groq
 
     client = Groq(api_key=GROQ_API_KEY)
     resp = client.chat.completions.create(
-        model=GROQ_MODEL,
+        model=model or GROQ_MODEL,
         messages=messages,
         temperature=temperature,
         max_tokens=max_tokens,

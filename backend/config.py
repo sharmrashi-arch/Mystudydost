@@ -9,7 +9,8 @@ APP_NAME = os.getenv("APP_NAME", "MyStudyDost")
 APP_ENV = os.getenv("APP_ENV", "development")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 SERP_API_KEY = os.getenv("SERP_API_KEY", "")
-GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+GROQ_VISION_MODEL = os.getenv("GROQ_VISION_MODEL", "qwen/qwen3.8-27b")
 
 DATA_DIR = BASE_DIR / "data"
 RAW_DATA_DIR = DATA_DIR / "raw"
@@ -22,7 +23,7 @@ RETRIEVAL_TOP_K = 5
 DISTANCE_THRESHOLD = 1.2  # tune after ingestion/testing
 SERP_CACHE_DAYS = 7
 RATE_LIMIT_PER_MINUTE = 20
-MAX_QUESTION_LENGTH = 1000
+MAX_QUESTION_LENGTH = 20000
 
 ALLOWED_SITE_HINTS = [
     "ncert.nic.in",
