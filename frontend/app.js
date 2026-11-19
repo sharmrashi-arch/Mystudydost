@@ -3,6 +3,7 @@
 
   const LANGUAGES = [
     { code: 'auto', en: 'Auto-detect', native: 'Auto-detect' },
+    { code: 'hi-en', en: 'Hindi-English', native: 'हिंदी-English' },
     { code: 'en', en: 'English', native: 'English' },
     { code: 'hi', en: 'Hindi', native: 'हिन्दी' },
     { code: 'pa', en: 'Punjabi', native: 'ਪੰਜਾਬੀ' },
@@ -36,7 +37,7 @@
   const RTL_LANGS = new Set(['ar', 'ur', 'he', 'fa']);
 
   const SPEECH_LANG = {
-    auto: 'hi-IN', en: 'en-IN', hi: 'hi-IN', pa: 'pa-IN', ur: 'ur-PK', bn: 'bn-IN',
+    auto: 'hi-IN', 'hi-en': 'hi-IN', en: 'en-IN', hi: 'hi-IN', pa: 'pa-IN', ur: 'ur-PK', bn: 'bn-IN',
     mr: 'mr-IN', gu: 'gu-IN', ta: 'ta-IN', te: 'te-IN', ar: 'ar', es: 'es-ES', fr: 'fr-FR',
     kn: 'kn-IN', ml: 'ml-IN', or: 'or-IN', as: 'as-IN', ne: 'ne-NP', zh: 'zh-CN',
     ja: 'ja-JP', ko: 'ko-KR', de: 'de-DE', ru: 'ru-RU', pt: 'pt-BR', it: 'it-IT'
@@ -97,11 +98,14 @@
 
   function loadLanguage() {
     const saved = localStorage.getItem('language');
-    if (saved) {
+    if (saved && LANGUAGES.find(l => l.code === saved)) {
       currentLang = saved;
+    } else {
+      currentLang = 'en';
     }
     updateLangButton();
     applyRTL();
+    if (window.applyI18n) window.applyI18n(currentLang);
   }
 
   function getApiLang() {
@@ -156,6 +160,8 @@
     applyRTL();
     closeLangDropdown();
     renderLangList();
+    if (window.applyI18n) window.applyI18n(currentLang);
+    loadHistory();
   }
 
   function openLangDropdown() {
@@ -206,7 +212,7 @@
         <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
         <span class="history-title">${title}</span>
         <span class="history-time">${escapeHtml(timeLabel(chat.updatedAt || chat.createdAt))}</span>
-        <button class="history-delete" data-delete-id="${id}" aria-label="Chat delete karein" title="Delete">
+        <button class="history-delete" data-delete-id="${id}" aria-label="${t('ariaDeleteChat')}" title="${t('ariaDeleteChat')}">
           <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
         </button>
       </li>
@@ -227,9 +233,9 @@
 
       todayList.innerHTML = groups.today.length
         ? groups.today.map(historyItemHtml).join('')
-        : '<li class="history-empty">Aaj koi chat nahi</li>';
-      weekList.innerHTML = groups.week.map(historyItemHtml).join('') || '<li class="history-empty">Pichhle 7 din koi chat nahi</li>';
-      olderList.innerHTML = groups.older.map(historyItemHtml).join('') || '<li class="history-empty">Purani chat nahi</li>';
+        : '<li class="history-empty">' + t('emptyToday') + '</li>';
+      weekList.innerHTML = groups.week.map(historyItemHtml).join('') || '<li class="history-empty">' + t('emptyWeek') + '</li>';
+      olderList.innerHTML = groups.older.map(historyItemHtml).join('') || '<li class="history-empty">' + t('emptyOlder') + '</li>';
     } catch (e) {
       todayList.innerHTML = '';
       weekList.innerHTML = '';
@@ -240,7 +246,7 @@
   async function openChat(id) {
     try {
       const res = await fetch('/api/chats/' + encodeURIComponent(id));
-      if (!res.ok) { showToast('Chat nahi mil payi'); return; }
+      if (!res.ok) { showToast(t('toastChatMissing')); return; }
       const chat = await res.json();
       currentChatId = chat.id;
       conversation = (chat.messages || []).map(m => ({
@@ -254,7 +260,7 @@
       conversation.forEach(m => addMessage(m.role, m.content, false, m.sources, m.attachments));
       closeSidebar();
     } catch (e) {
-      showToast('Chat load nahi hui');
+      showToast(t('toastChatLoad'));
     }
   }
 
@@ -264,7 +270,7 @@
       if (currentChatId === id) newChat();
       loadHistory();
     } catch (e) {
-      showToast('Chat delete nahi hui');
+      showToast(t('toastChatDelete'));
     }
   }
 
@@ -563,7 +569,7 @@
       })
       .then(data => {
         hideTyping(typingId);
-        const reply = data.answer || 'Maaf kijiye, jawab nahi mil paya.';
+        const reply = data.answer || t('assistantNoReply');
         const sources = Array.isArray(data.sources) ? data.sources : [];
         const assistantMsg = { role: 'assistant', content: reply, sources };
         if (conversation === convoRef) {
@@ -577,7 +583,7 @@
       .catch(() => {
         hideTyping(typingId);
         if (conversation === convoRef) {
-          addMessage('assistant', 'Maaf kijiye, abhi jawab nahi de pa raha hoon. Thodi der baad phir koshish karein.', false);
+          addMessage('assistant', t('assistantError'), false);
         }
       });
   }
@@ -644,39 +650,39 @@
 
   const PANELS = {
     notes: {
-      title: 'Notes banayein',
-      submitLabel: 'Notes banao',
-      html: `
+      titleKey: 'modalNotesTitle',
+      submitKey: 'modalNotesSubmit',
+      html: (t) => `
         <div class="field">
-          <label for="npTopic">Kis topic ke notes chahiye?</label>
-          <input id="npTopic" type="text" placeholder="Jaise: Photosynthesis, Mughal Empire, Quadratic Equations..." autocomplete="off" maxlength="300">
+          <label for="npTopic">${t('fieldTopic')}</label>
+          <input id="npTopic" type="text" placeholder="${t('fieldTopicPh')}" autocomplete="off" maxlength="300">
         </div>
         <div class="field">
-          <label>Material kaise denge?</label>
+          <label>${t('fieldMaterialHow')}</label>
           <div class="choice-group" id="npSource">
             <button type="button" class="choice active" data-value="ai">
-              <span class="choice-title">AI khud banaye</span>
-              <span class="choice-desc">Sirf topic likhein — AI poore notes banayega</span>
+              <span class="choice-title">${t('aiNotesTitle')}</span>
+              <span class="choice-desc">${t('aiNotesDesc')}</span>
             </button>
             <button type="button" class="choice" data-value="material">
-              <span class="choice-title">Apna material dunga</span>
-              <span class="choice-desc">Apne notes/text paste ya upload karein — usi par based notes banenge</span>
+              <span class="choice-title">${t('ownMaterialTitle')}</span>
+              <span class="choice-desc">${t('ownMaterialDesc')}</span>
             </button>
           </div>
         </div>
         <div class="field" id="npMaterialWrap" hidden>
-          <label for="npMaterial">Apna material yahan paste karein</label>
-          <textarea id="npMaterial" maxlength="8000" placeholder="Textbook page, apne notes ya koi bhi study material yahan paste karein..."></textarea>
-          <button type="button" class="btn-file" id="npFileBtn">PDF / .txt / .md file upload karein</button>
+          <label for="npMaterial">${t('pasteMaterialLabel')}</label>
+          <textarea id="npMaterial" maxlength="8000" placeholder="${t('pasteMaterialPh')}"></textarea>
+          <button type="button" class="btn-file" id="npFileBtn">${t('uploadFileBtn')}</button>
           <input type="file" id="npFile" accept=".txt,.md,.csv,.pdf" hidden>
-          <span class="field-hint">PDF aur text files dono support hain (8MB tak).</span>
+          <span class="field-hint">${t('uploadFileHint')}</span>
         </div>
         <div class="field">
-          <label for="npFormat">Notes ka type</label>
+          <label for="npFormat">${t('notesTypeLabel')}</label>
           <select id="npFormat">
-            <option value="short">Short notes (1 page)</option>
-            <option value="detailed" selected>Detailed notes</option>
-            <option value="points">Bullet-point revision points</option>
+            <option value="short">${t('notesShort')}</option>
+            <option value="detailed" selected>${t('notesDetailed')}</option>
+            <option value="points">${t('notesPoints')}</option>
           </select>
         </div>`,
       mount(body) {
@@ -692,22 +698,23 @@
             fetch('/api/upload', { method: 'POST', body: data })
               .then(res => res.json().then(d => ({ ok: res.ok, d })))
               .then(({ ok, d }) => {
-                if (!ok) { showToast(d.detail || 'PDF padhne me problem hui'); return; }
+                if (!ok) { showToast(d.detail || t('toastFileReadError')); return; }
                 textarea.value = (d.text || '').slice(0, 8000);
               })
-              .catch(() => showToast('PDF upload me problem hui'));
+              .catch(() => showToast(t('toastUploadError')));
           } else {
-            f.text().then(t => { textarea.value = t.slice(0, 8000); }).catch(() => showToast('File padhne me problem hui'));
+            f.text().then(text => { textarea.value = text.slice(0, 8000); }).catch(() => showToast(t('toastFileReadError')));
           }
         });
       },
       build(body) {
         const topic = body.querySelector('#npTopic').value.trim();
         if (!topic) return null;
-        const src = (body.querySelector('#npSource .choice.active') || {}).dataset?.value || 'ai';
+        const active = body.querySelector('#npSource .choice.active');
+        const source = (active && active.dataset && active.dataset.value) || 'ai';
         const fmtKey = body.querySelector('#npFormat').value;
         const fmt = { short: 'short notes (1 page)', detailed: 'detailed notes', points: 'bullet-point revision notes' }[fmtKey] || 'detailed notes';
-        if (src === 'material') {
+        if (source === 'material') {
           const material = body.querySelector('#npMaterial').value.trim();
           if (!material) return null;
           return `Niche diye gaye material ke adhar par "${topic}" ke ${fmt} banao. Easy language me, important points highlight karke.\n\nMaterial:\n${material}`;
@@ -716,24 +723,24 @@
       }
     },
     presentation: {
-      title: 'Presentation banayein',
-      submitLabel: 'Slides banao',
-      html: `
+      titleKey: 'modalPptTitle',
+      submitKey: 'modalPptSubmit',
+      html: (t) => `
         <div class="field">
-          <label for="ppTopic">Presentation ka topic kya hai?</label>
-          <input id="ppTopic" type="text" placeholder="Jaise: Digital Marketing, Solar Energy, My School..." autocomplete="off" maxlength="300">
+          <label for="ppTopic">${t('pptTopicLabel')}</label>
+          <input id="ppTopic" type="text" placeholder="${t('pptTopicPh')}" autocomplete="off" maxlength="300">
         </div>
         <div class="modal-row">
           <div class="field">
-            <label for="ppSlides">Kitne slides?</label>
+            <label for="ppSlides">${t('slidesCountLabel')}</label>
             <input id="ppSlides" type="number" min="3" max="20" value="8">
           </div>
           <div class="field">
-            <label for="ppStyle">Style</label>
+            <label for="ppStyle">${t('pptStyleLabel')}</label>
             <select id="ppStyle">
-              <option>Simple</option>
-              <option>Professional</option>
-              <option>Fun / Interactive</option>
+              <option>${t('styleSimple')}</option>
+              <option>${t('styleProf')}</option>
+              <option>${t('styleFun')}</option>
             </select>
           </div>
         </div>`,
@@ -747,17 +754,17 @@
       }
     },
     maths: {
-      title: 'Maths hal karein',
-      submitLabel: 'Hal karo',
-      html: `
+      titleKey: 'modalMathsTitle',
+      submitKey: 'modalMathsSubmit',
+      html: (t) => `
         <div class="field">
-          <label for="mqProblem">Sawal yahan likhein</label>
-          <textarea id="mqProblem" placeholder="Jaise: x^2 - 5x + 6 = 0 hal karo, ya triangle ka area kya hoga..."></textarea>
+          <label for="mqProblem">${t('problemLabel')}</label>
+          <textarea id="mqProblem" placeholder="${t('problemPh')}"></textarea>
         </div>
         <div class="field">
-          <label for="mqClass">Class (optional)</label>
+          <label for="mqClass">${t('classOptionalLabel')}</label>
           <select id="mqClass">
-            <option value="">General</option>
+            <option value="">${t('classGeneral')}</option>
             ${CLASS_OPTS}
           </select>
         </div>`,
@@ -769,11 +776,11 @@
       }
     },
     writing: {
-      title: 'Likhne me madad',
-      submitLabel: 'Draft banao',
-      html: `
+      titleKey: 'modalWritingTitle',
+      submitKey: 'modalWritingSubmit',
+      html: (t) => `
         <div class="field">
-          <label for="wrType">Kya likhna hai?</label>
+          <label for="wrType">${t('writingTypeLabel')}</label>
           <select id="wrType">
             <option>Email</option>
             <option>Letter</option>
@@ -782,8 +789,8 @@
           </select>
         </div>
         <div class="field">
-          <label for="wrDetails">Details — konu ko, kis baat ke liye?</label>
-          <textarea id="wrDetails" placeholder="Jaise: Principal ko 3 din ki chhutti ke liye application — bukhar ho gaya hai..."></textarea>
+          <label for="wrDetails">${t('writingDetailsLabel')}</label>
+          <textarea id="wrDetails" placeholder="${t('writingDetailsPh')}"></textarea>
         </div>`,
       build(body) {
         const details = body.querySelector('#wrDetails').value.trim();
@@ -793,15 +800,15 @@
       }
     },
     translate: {
-      title: 'Translate karein',
-      submitLabel: 'Translate karo',
-      html: `
+      titleKey: 'modalTranslateTitle',
+      submitKey: 'modalTranslateSubmit',
+      html: (t) => `
         <div class="field">
-          <label for="trText">Translate karne wala text</label>
-          <textarea id="trText" placeholder="Yahaan text paste karein..."></textarea>
+          <label for="trText">${t('translateTextLabel')}</label>
+          <textarea id="trText" placeholder="${t('translateTextPh')}"></textarea>
         </div>
         <div class="field">
-          <label for="trTarget">Kis bhasha me translate karein?</label>
+          <label for="trTarget">${t('translateTargetLabel')}</label>
           <select id="trTarget">
             ${TRANSLATE_TARGETS.map(l => `<option>${l}</option>`).join('')}
           </select>
@@ -814,12 +821,12 @@
       }
     },
     syllabus: {
-      title: 'Syllabus dekhein',
-      submitLabel: 'Syllabus dikhao',
-      html: `
+      titleKey: 'modalSyllabusTitle',
+      submitKey: 'modalSyllabusSubmit',
+      html: (t) => `
         <div class="modal-row">
           <div class="field">
-            <label for="syBoard">Board</label>
+            <label for="syBoard">${t('boardLabel')}</label>
             <select id="syBoard">
               <option>CBSE</option>
               <option>ICSE</option>
@@ -829,13 +836,13 @@
             </select>
           </div>
           <div class="field">
-            <label for="syClass">Class</label>
+            <label for="syClass">${t('classLabel')}</label>
             <select id="syClass">${CLASS_OPTS}</select>
           </div>
         </div>
         <div class="field">
-          <label for="sySubject">Subject</label>
-          <input id="sySubject" type="text" placeholder="Jaise: Mathematics, Science, Hindi, English..." autocomplete="off" maxlength="100">
+          <label for="sySubject">${t('subjectLabel')}</label>
+          <input id="sySubject" type="text" placeholder="${t('subjectPh')}" autocomplete="off" maxlength="100">
         </div>`,
       build(body) {
         const subject = body.querySelector('#sySubject').value.trim();
@@ -852,11 +859,12 @@
   function openOptionModal(type) {
     const cfg = PANELS[type];
     if (!cfg) return;
+    const t = window.t || (k => k);
     activePanel = { type, lastFocus: document.activeElement };
-    qs('#modalTitle').textContent = cfg.title;
-    qs('#modalSubmit').textContent = cfg.submitLabel;
+    qs('#modalTitle').textContent = t(cfg.titleKey);
+    qs('#modalSubmit').textContent = t(cfg.submitKey);
     const body = qs('#modalBody');
-    body.innerHTML = cfg.html;
+    body.innerHTML = cfg.html(t);
     qs('#optionModal').hidden = false;
     document.body.style.overflow = 'hidden';
     if (cfg.mount) cfg.mount(body);
@@ -877,7 +885,7 @@
     const cfg = PANELS[activePanel.type];
     const prompt = cfg.build(qs('#modalBody'));
     if (!prompt) {
-      showToast('Pehle zaroori details bharein');
+      showToast(t('fillRequired'));
       return;
     }
     closeOptionModal();
@@ -906,7 +914,7 @@
       }
       return `<span class="source-item">${safe}</span>`;
     }).join('');
-    return `<div class="message-sources"><span class="sources-label">Sources</span>${items}</div>`;
+    return `<div class="message-sources"><span class="sources-label">' + t('sourcesLabel') + '</span>${items}</div>`;
   }
 
   function attachmentsHtml(attachments) {
@@ -946,10 +954,10 @@
         ${sourcesHtml(sources)}
         ${showVoicePrompt ? `
         <div class="voice-prompt">
-          <span class="voice-prompt-text">Kya aap ise sunna chahte hain?</span>
+          <span class="voice-prompt-text">${t('voicePrompt')}</span>
           <div class="voice-prompt-buttons">
-            <button class="voice-btn voice-btn-yes" data-action="speak-yes">Haan, suniye</button>
-            <button class="voice-btn voice-btn-no" data-action="speak-no">Nahi</button>
+            <button class="voice-btn voice-btn-yes" data-action="speak-yes">${t('voiceYes')}</button>
+            <button class="voice-btn voice-btn-no" data-action="speak-no">${t('voiceNo')}</button>
           </div>
         </div>
         ` : ''}
@@ -969,7 +977,7 @@
     switch (action) {
       case 'copy':
         navigator.clipboard.writeText(content).then(() => {
-          showToast('Copied!');
+          showToast(t('toastCopied'));
         });
         break;
       case 'listen':
@@ -992,7 +1000,7 @@
     if (!lastQuestion) return;
     const oldSources = msgEl.querySelector('.message-sources');
     const bubble = msgEl.querySelector('.message-bubble');
-    bubble.textContent = 'Regenerating...';
+    bubble.textContent = t('regenerating');
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
@@ -1001,7 +1009,7 @@
       });
       if (!res.ok) throw new Error('Request failed');
       const data = await res.json();
-      const reply = data.answer || 'Nahi ho paaya, phir koshish karein.';
+      const reply = data.answer || t('regenFail');
       bubble.innerHTML = renderMarkdown(reply);
       if (oldSources) oldSources.remove();
       const sources = Array.isArray(data.sources) ? data.sources : [];
@@ -1018,7 +1026,7 @@
       }
       persistConversation();
     } catch (e) {
-      bubble.textContent = 'Nahi ho paaya, phir koshish karein.';
+      bubble.textContent = t('regenFail');
     }
   }
 
@@ -1113,10 +1121,10 @@
       try {
         const res = await fetch('/api/upload', { method: 'POST', body: data });
         const d = await res.json();
-        if (!res.ok) { showToast(d.detail || 'File upload nahi hui'); continue; }
+        if (!res.ok) { showToast(d.detail || t('toastFileFailed')); continue; }
         pendingAttachments.push({ name: d.name || file.name, kind: d.kind, data: d.data || '', text: d.text || '', size: d.size || file.size });
       } catch (e) {
-        showToast('Upload me problem aayi');
+        showToast(t('toastUploadError'));
       }
     }
     if (pendingAttachments.length > 6) pendingAttachments = pendingAttachments.slice(-6);
@@ -1136,13 +1144,13 @@
     if (files.length) {
       e.preventDefault();
       uploadFiles(files);
-      showToast('Image attach ho gayi');
+      showToast(t('toastImageAttached'));
     }
   }
 
   async function captureScreenShot() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-      showToast('Is browser me screen capture support nahi hai');
+      showToast(t('toastScreenshotUnsupported'));
       return;
     }
     try {
@@ -1162,11 +1170,11 @@
       const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
       if (blob) {
         await uploadFiles([new File([blob], 'screenshot-' + Date.now() + '.png', { type: 'image/png' })]);
-        showToast('Screenshot attach ho gaya');
+        showToast(t('toastScreenshotAttached'));
       }
     } catch (e) {
-      if (e && (e.name === 'NotAllowedError' || e.name === 'AbortError')) showToast('Screenshot cancel hua');
-      else showToast('Screenshot nahi le pa rahe');
+      if (e && (e.name === 'NotAllowedError' || e.name === 'AbortError')) showToast(t('toastScreenshotCancelled'));
+      else showToast(t('toastScreenshotFailed'));
     }
   }
 
@@ -1192,7 +1200,7 @@
   function handleMicClick() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) {
-      showToast('Is browser me voice input support nahi hai');
+      showToast(t('voiceUnsupported'));
       return;
     }
     try {
@@ -1200,17 +1208,17 @@
       rec.lang = SPEECH_LANG[currentLang] || 'hi-IN';
       rec.interimResults = false;
       rec.maxAlternatives = 1;
-      showToast('Bolna shuru karein...');
+      showToast(t('listening'));
       rec.onresult = (e) => {
         const transcript = (e.results && e.results[0] && e.results[0][0].transcript) || '';
         const text = transcript.trim();
         if (text) sendMessage(text);
-        else showToast('Kuch sunayi nahi diya, phir koshish karein');
+        else showToast(t('voiceNotHeard'));
       };
-      rec.onerror = () => showToast('Voice input nahi ho paaya');
+      rec.onerror = () => showToast(t('voiceError'));
       rec.start();
     } catch (e) {
-      showToast('Voice input nahi ho paaya');
+      showToast(t('voiceError'));
     }
   }
 

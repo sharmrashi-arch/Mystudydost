@@ -40,24 +40,24 @@
           <span class="logo-text">MyStudyDost</span>
         </div>
       </div>
-      <button class="btn-new-chat" id="newChatBtn" aria-label="Nayi chat">
+      <button class="btn-new-chat" id="newChatBtn" data-i18n-aria="ariaNewChat">
         <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
-        <span>Nayi chat</span>
+        <span data-i18n="newChat">New chat</span>
       </button>
       <nav class="chat-history" aria-label="Chat history">
         <section class="history-group">
-          <h3 class="history-group-title">Aaj</h3>
+          <h3 class="history-group-title" data-i18n="groupToday">Today</h3>
           <ul class="history-list" id="historyToday" role="listbox"></ul>
         </section>
         <section class="history-group">
-          <h3 class="history-group-title">Pichhle 7 din</h3>
+          <h3 class="history-group-title" data-i18n="groupWeek">Previous 7 days</h3>
           <ul class="history-list" id="historyWeek" role="listbox"></ul>
         </section>
         <section class="history-group">
-          <h3 class="history-group-title">Purane</h3>
+          <h3 class="history-group-title" data-i18n="groupOlder">Older</h3>
           <ul class="history-list" id="historyOlder" role="listbox"></ul>
         </section>
       </nav>
@@ -66,7 +66,7 @@
           <div class="avatar">U</div>
           <div class="profile-info">
             <span class="profile-name">User</span>
-            <span class="profile-plan">Free</span>
+            <span class="profile-plan" data-i18n="planFree">Free</span>
           </div>
         </div>
       </div>
@@ -74,12 +74,12 @@
 
     <div class="main">
       <header class="topbar">
-        <button class="icon-btn back-btn" id="backBtn" aria-label="Wapas jayein" hidden>
+        <button class="icon-btn back-btn" id="backBtn" data-i18n-aria="ariaBack" hidden>
           <svg class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
         </button>
-        <button class="icon-btn hamburger" id="hamburger" aria-label="Menu kholo" aria-expanded="false">
+        <button class="icon-btn hamburger" id="hamburger" data-i18n-aria="ariaMenu" aria-expanded="false">
           <svg class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -89,7 +89,7 @@
         <div class="topbar-spacer"></div>
         <div class="topbar-actions">
           <div class="lang-selector" id="langSelector">
-            <button class="btn-lang" id="langBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Bhasha chunein">
+            <button class="btn-lang" id="langBtn" aria-haspopup="listbox" aria-expanded="false" data-i18n-aria="ariaLang">
               <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="2" y1="12" x2="22" y2="12"></line>
@@ -100,18 +100,18 @@
                 <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
             </button>
-            <div class="lang-dropdown" id="langDropdown" role="listbox" aria-label="Bhasha chunein" hidden>
+            <div class="lang-dropdown" id="langDropdown" role="listbox" data-i18n-aria="ariaLang" hidden>
               <div class="lang-search">
                 <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="11" cy="11" r="8"></circle>
                   <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
-                <input type="search" id="langSearch" placeholder="Bhasha dhundhein..." aria-label="Bhasha dhundhein" autocomplete="off">
+                <input type="search" id="langSearch" data-i18n-placeholder="ariaLangSearch" data-i18n-aria="ariaLangSearch" placeholder="Search language..." autocomplete="off">
               </div>
               <div class="lang-list" id="langList" role="listbox"></div>
             </div>
           </div>
-          <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Dark mode toggle" aria-pressed="false">
+          <button class="icon-btn theme-toggle" id="themeToggle" data-i18n-aria="ariaTheme" aria-pressed="false">
             <svg class="icon sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="5"></circle>
               <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -133,26 +133,26 @@
       <main class="chat-area" id="chatArea" role="main">
         <div class="chat-inner">
           <div class="welcome" id="welcomeScreen" role="region" aria-label="Welcome screen">
-            <h1 class="welcome-title">Namaste! <span class="teal-text">Aaj main aapki kya madad karun?</span></h1>
+            <h1 class="welcome-title"><span data-i18n="welcomeTitle">Hello!</span> <span class="teal-text" data-i18n="welcomeTitleAccent">How can I help you today?</span></h1>
             <form class="composer-card" id="composerCard" role="search">
               <div class="composer-input-wrapper">
-                <textarea class="composer-textarea" id="composerTextarea" placeholder="Apna sawal yahan likhein..." aria-label="Apna sawal yahan likhein" rows="1" spellcheck="false"></textarea>
+                <textarea class="composer-textarea" id="composerTextarea" data-i18n-placeholder="composerPlaceholder" data-i18n-aria="composerPlaceholder" placeholder="Type your question here..." rows="1" spellcheck="false"></textarea>
               </div>
               <div class="attach-preview" id="attachPreview" aria-label="Attached files"></div>
               <div class="composer-actions">
-                <button type="button" class="btn-attach" id="attachBtn" aria-label="File attach karein">
+                <button type="button" class="btn-attach" id="attachBtn" data-i18n-aria="ariaAttach">
                   <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.2-9.19a4 4 0 0 1 5.65 5.66l-9.2 9.19a2 2 0 0 1-2.82-2.83l8.49-8.48"></path>
                   </svg>
                 </button>
-                <button type="button" class="btn-mic" id="micBtn" aria-label="Bol kar puchhein">
+                <button type="button" class="btn-mic" id="micBtn" data-i18n-aria="ariaMic">
                   <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
                     <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                     <line x1="12" y1="19" x2="12" y2="22"></line>
                   </svg>
                 </button>
-                <button type="submit" class="btn-send" id="sendBtn" aria-label="Bhejein" disabled>
+                <button type="submit" class="btn-send" id="sendBtn" data-i18n-aria="ariaSend" disabled>
                   <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13"></line>
                     <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -160,47 +160,47 @@
                 </button>
               </div>
             </form>
-            <p class="disclaimer">MyStudyDost galti kar sakta hai. Zaroori baat ek baar jaanch lijiye.</p>
+            <p class="disclaimer" data-i18n="disclaimer">MyStudyDost can make mistakes. Please double-check important information.</p>
             <div class="cards-grid" id="cardsGrid" role="list">
               <button type="button" class="card" data-prompt="Mujhe AI ke baare mein simple language mein samjhao" role="listitem">
                 <svg class="card-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                <h3>Kuch bhi puchho</h3>
-                <p>Koi bhi sawal</p>
+                <h3 data-i18n="cardAskTitle">Ask anything</h3>
+                <p data-i18n="cardAskSub">Any question</p>
               </button>
               <button type="button" class="card" data-card="notes" data-prompt="Photosynthesis par short notes banao" role="listitem">
                 <svg class="card-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                <h3>Notes / PDF</h3>
-                <p>Notes banwaiye</p>
+                <h3 data-i18n="cardNotesTitle">Notes / PDF</h3>
+                <p data-i18n="cardNotesSub">Create notes</p>
               </button>
               <button type="button" class="card" data-card="presentation" data-prompt="Digital Marketing par 8 slides ki presentation banao" role="listitem">
                 <svg class="card-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
-                <h3>Presentation</h3>
-                <p>PPT banwaiye</p>
+                <h3 data-i18n="cardPptTitle">Presentation</h3>
+                <p data-i18n="cardPptSub">Create PPT</p>
               </button>
               <button type="button" class="card" data-prompt="Is photo mein kya hai?" role="listitem">
                 <svg class="card-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                <h3>Image se puchho</h3>
-                <p>Photo bhejiye</p>
+                <h3 data-i18n="cardImageTitle">Ask from image</h3>
+                <p data-i18n="cardImageSub">Send a photo</p>
               </button>
               <button type="button" class="card" data-card="maths" data-prompt="x^2 - 5x + 6 = 0 hal karo" role="listitem">
                 <svg class="card-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="19" x2="10" y2="5"></line><line x1="14" y1="19" x2="14" y2="5"></line><line x1="18" y1="19" x2="18" y2="5"></line><line x1="6" y1="19" x2="6" y2="5"></line><line x1="2" y1="19" x2="22" y2="19"></line></svg>
-                <h3>Maths hal karo</h3>
-                <p>Step-by-step jawab</p>
+                <h3 data-i18n="cardMathTitle">Solve maths</h3>
+                <p data-i18n="cardMathSub">Step-by-step answers</p>
               </button>
               <button type="button" class="card" data-card="writing" data-prompt="Principal ko chhutti ke liye application likho" role="listitem">
                 <svg class="card-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                <h3>Likhne mein madad</h3>
-                <p>Email, letter, post</p>
+                <h3 data-i18n="cardWriteTitle">Writing help</h3>
+                <p data-i18n="cardWriteSub">Email, letter, post</p>
               </button>
               <button type="button" class="card" data-card="translate" data-prompt="Is paragraph ko Hindi se English mein translate karo" role="listitem">
                 <svg class="card-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"></path><path d="M4 14l6-6"></path><path d="M2 5h12"></path><path d="M7 19h10"></path></svg>
-                <h3>Translate</h3>
-                <p>Kisi bhi bhasha mein</p>
+                <h3 data-i18n="cardTranslateTitle">Translate</h3>
+                <p data-i18n="cardTranslateSub">In any language</p>
               </button>
               <button type="button" class="card" data-card="syllabus" data-prompt="Class 10 Maths ka syllabus dikhao" role="listitem">
                 <svg class="card-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                <h3>Syllabus aur padhai</h3>
-                <p>Class 1 se college</p>
+                <h3 data-i18n="cardSyllabusTitle">Syllabus &amp; studies</h3>
+                <p data-i18n="cardSyllabusSub">Class 1 to college</p>
               </button>
             </div>
           </div>
@@ -213,20 +213,20 @@
           <form class="composer-bottom" id="composerBottom" role="search">
             <div class="attach-preview" id="attachPreviewBottom" aria-label="Attached files"></div>
             <div class="composer-bottom-input">
-              <button type="button" class="btn-attach" id="attachBtnBottom" aria-label="File attach karein">
+              <button type="button" class="btn-attach" id="attachBtnBottom" data-i18n-aria="ariaAttach">
                 <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.2-9.19a4 4 0 0 1 5.65 5.66l-9.2 9.19a2 2 0 0 1-2.82-2.83l8.49-8.48"></path>
                 </svg>
               </button>
-              <textarea class="composer-bottom-textarea" id="composerBottomTextarea" placeholder="Apna sawal yahan likhein..." aria-label="Apna sawal yahan likhein" rows="1" spellcheck="false"></textarea>
-              <button type="button" class="btn-mic" id="micBtnBottom" aria-label="Bol kar puchhein">
+              <textarea class="composer-bottom-textarea" id="composerBottomTextarea" data-i18n-placeholder="composerPlaceholder" data-i18n-aria="composerPlaceholder" placeholder="Type your question here..." rows="1" spellcheck="false"></textarea>
+              <button type="button" class="btn-mic" id="micBtnBottom" data-i18n-aria="ariaMic">
                 <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
                   <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                   <line x1="12" y1="19" x2="12" y2="22"></line>
                 </svg>
               </button>
-              <button type="submit" class="btn-send" id="sendBtnBottom" aria-label="Bhejein" disabled>
+              <button type="submit" class="btn-send" id="sendBtnBottom" data-i18n-aria="ariaSend" disabled>
                 <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="22" y1="2" x2="11" y2="13"></line>
                   <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -238,11 +238,13 @@
       </main>
     </div>
 
+    <input type="file" id="fileInput" accept="image/*,.txt,.md,.csv,.pdf" multiple hidden>
+
     <div class="modal-overlay" id="optionModal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <div class="modal" role="document">
         <div class="modal-header">
-          <h2 id="modalTitle">Option select karein</h2>
-          <button class="icon-btn" id="modalClose" aria-label="Band karein">
+          <h2 id="modalTitle">Option</h2>
+          <button class="icon-btn" id="modalClose" data-i18n-aria="ariaMenu">
             <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -251,26 +253,26 @@
         </div>
         <div class="modal-body" id="modalBody"></div>
         <div class="modal-footer">
-          <button type="button" class="btn-secondary" id="modalCancel">Cancel</button>
+          <button type="button" class="btn-secondary" id="modalCancel" data-i18n="cancelBtn">Cancel</button>
           <button type="button" class="btn-primary" id="modalSubmit">Banao</button>
         </div>
       </div>
     </div>
 
-    <input type="file" id="fileInput" accept="image/*,.txt,.md,.csv,.pdf" multiple hidden>
-    <div class="attach-menu" id="attachMenu" hidden role="menu" aria-label="Attach options">
+    <div class="attach-menu" id="attachMenu" hidden role="menu" data-i18n-aria="ariaAttachMenu">
       <button type="button" class="attach-menu-item" data-attach-action="file" role="menuitem">
         <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.2-9.19a4 4 0 0 1 5.65 5.66l-9.2 9.19a2 2 0 0 1-2.82-2.83l8.49-8.48"></path></svg>
-        <span>File upload karein</span>
+        <span data-i18n="attachFileItem">Upload file</span>
       </button>
       <button type="button" class="attach-menu-item" data-attach-action="screenshot" role="menuitem">
         <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-        <span>Screen ka screenshot lein</span>
+        <span data-i18n="attachScreenshotItem">Capture screen</span>
       </button>
     </div>
     <div class="scrim" id="scrim" aria-hidden="true"></div>
   </div>
 
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
