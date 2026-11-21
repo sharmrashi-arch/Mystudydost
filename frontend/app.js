@@ -59,6 +59,21 @@
   const qs = (sel) => document.querySelector(sel);
   const qsa = (sel) => document.querySelectorAll(sel);
 
+  const SESSION_ID = (function () {
+    let id = localStorage.getItem('msd_session');
+    if (!id) {
+      id = 's-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      localStorage.setItem('msd_session', id);
+    }
+    return id;
+  })();
+  let activeController = null;
+  const apiFetch = (url, opts) => {
+    opts = opts || {};
+    const headers = Object.assign({}, opts.headers || {}, { 'X-Session-Id': SESSION_ID });
+    return window.fetch(url, Object.assign({}, opts, { headers }));
+  };
+
   function init() {
     loadTheme();
     loadLanguage();
@@ -67,6 +82,9 @@
     bindEvents();
     autoResizeTextareas();
     checkDarkMode();
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(() => {}); });
+    }
   }
 
   function loadTheme() {
@@ -109,7 +127,7 @@
   }
 
   function getApiLang() {
-    return currentLang === 'auto' ? 'en' : currentLang;
+    return currentLang || 'en';
   }
 
   function applyRTL() {
@@ -226,7 +244,7 @@
     if (!todayList || !weekList || !olderList) return;
 
     try {
-      const res = await fetch('/api/chats');
+      const res = await apiFetch('/api/chats');
       const chats = res.ok ? await res.json() : [];
       const groups = { today: [], week: [], older: [] };
       chats.forEach(c => groups[groupKey(c.updatedAt || c.createdAt)].push(c));
@@ -245,7 +263,7 @@
 
   async function openChat(id) {
     try {
-      const res = await fetch('/api/chats/' + encodeURIComponent(id));
+      const res = await apiFetch('/api/chats/' + encodeURIComponent(id));
       if (!res.ok) { showToast(t('toastChatMissing')); return; }
       const chat = await res.json();
       currentChatId = chat.id;
@@ -266,7 +284,7 @@
 
   async function deleteChat(id) {
     try {
-      await fetch('/api/chats/' + encodeURIComponent(id), { method: 'DELETE' });
+      await apiFetch('/api/chats/' + encodeURIComponent(id), { method: 'DELETE' });
       if (currentChatId === id) newChat();
       loadHistory();
     } catch (e) {
@@ -276,13 +294,13 @@
 
   async function persistStandalone(messages, title) {
     try {
-      const res = await fetch('/api/chats', {
+      const res = await apiFetch('/api/chats', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: (title || 'New Chat').slice(0, 48), board: '', class: '', subject: '', language: getApiLang() })
       });
       const data = await res.json();
-      await fetch('/api/chats/' + encodeURIComponent(data.id), {
+      await apiFetch('/api/chats/' + encodeURIComponent(data.id), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages })
@@ -297,7 +315,7 @@
     try {
       if (!currentChatId) {
         const title = (lastQuestion || 'New Chat').slice(0, 48);
-        const res = await fetch('/api/chats', {
+        const res = await apiFetch('/api/chats', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title, board: '', class: '', subject: '', language: getApiLang() })
@@ -305,7 +323,7 @@
         const data = await res.json();
         currentChatId = data.id;
       }
-      await fetch('/api/chats/' + encodeURIComponent(currentChatId), {
+      await apiFetch('/api/chats/' + encodeURIComponent(currentChatId), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: conversation })
@@ -553,39 +571,137 @@
     autoResizeTextareas();
     updateSendButton();
 
-    const typingId = showTyping();
     const sendAtts = atts.map(a => a.kind === 'image'
       ? { name: a.name, kind: 'image', data: a.data }
       : { name: a.name, kind: 'text', text: a.text });
 
-    fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, language: getApiLang(), attachments: sendAtts })
-    })
-      .then(res => {
-        if (!res.ok) throw new Error('Request failed');
-        return res.json();
-      })
-      .then(data => {
-        hideTyping(typingId);
-        const reply = data.answer || t('assistantNoReply');
-        const sources = Array.isArray(data.sources) ? data.sources : [];
-        const assistantMsg = { role: 'assistant', content: reply, sources };
-        if (conversation === convoRef) {
-          addMessage('assistant', reply, true, sources);
-          conversation.push(assistantMsg);
-          persistConversation();
-        } else {
-          persistStandalone([...convoRef, assistantMsg], question);
-        }
-      })
-      .catch(() => {
-        hideTyping(typingId);
-        if (conversation === convoRef) {
-          addMessage('assistant', t('assistantError'), false);
-        }
+    streamChat(question, sendAtts, convoRef);
+  }
+
+  function createAssistantShell() {
+    const el = document.createElement('div');
+    el.className = 'message assistant';
+    el.innerHTML = `
+      <div class="message-avatar"><img src="assets/logo.png" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover"></div>
+      <div class="message-bubble"></div>
+      <button class="action-btn action-stop" data-action="stop" aria-label="Stop" style="display:none;align-self:flex-start;margin-top:6px">
+        <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg>
+        <span>Stop</span>
+      </button>
+      <div class="message-actions" style="display:none">
+        <button class="action-btn" data-action="copy" aria-label="Copy"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+        <button class="action-btn" data-action="listen" aria-label="Suniye"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg></button>
+        <button class="action-btn" data-action="regenerate" aria-label="Regenerate"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg></button>
+      </div>
+      <div class="message-sources" style="display:none"></div>
+      <div class="voice-prompt" style="display:none">
+        <span class="voice-prompt-text">${t('voicePrompt')}</span>
+        <div class="voice-prompt-buttons">
+          <button class="voice-btn voice-btn-yes" data-action="speak-yes">${t('voiceYes')}</button>
+          <button class="voice-btn voice-btn-no" data-action="speak-no">${t('voiceNo')}</button>
+        </div>
+      </div>
+    `;
+    qs('#chatMessages').appendChild(el);
+    scrollToBottom();
+    el.querySelectorAll('[data-action]').forEach(btn => {
+      btn.addEventListener('click', () => handleAction(btn.dataset.action, el, el.dataset.content || ''));
+    });
+    return el;
+  }
+
+  function setBubble(el, text) {
+    const bubble = el.querySelector('.message-bubble');
+    if (!bubble) return;
+    bubble.innerHTML = renderMarkdown(text);
+    el.dataset.content = text;
+    scrollToBottom();
+  }
+
+  function finalizeAssistant(el, text, sources, showVoice) {
+    setBubble(el, text);
+    const stopBtn = el.querySelector('.action-stop');
+    const actions = el.querySelector('.message-actions');
+    const srcEl = el.querySelector('.message-sources');
+    const vp = el.querySelector('.voice-prompt');
+    if (stopBtn) stopBtn.style.display = 'none';
+    if (actions) actions.style.display = '';
+    if (srcEl) {
+      if (sources && sources.length) { srcEl.innerHTML = sourcesHtml(sources); srcEl.style.display = ''; }
+      else { srcEl.style.display = 'none'; }
+    }
+    if (vp) vp.style.display = showVoice ? '' : 'none';
+  }
+
+  function recordAssistant(convoRef, question, reply, sources) {
+    const assistantMsg = { role: 'assistant', content: reply, sources: sources || [] };
+    if (conversation === convoRef) {
+      conversation.push(assistantMsg);
+      persistConversation();
+    } else {
+      persistStandalone([...convoRef, assistantMsg], question);
+    }
+  }
+
+  async function streamChat(question, attachments, convoRef) {
+    const controller = new AbortController();
+    activeController = controller;
+    const el = createAssistantShell();
+    const stopBtn = el.querySelector('.action-stop');
+    const bubble = el.querySelector('.message-bubble');
+    if (stopBtn) stopBtn.style.display = '';
+    bubble.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span>';
+
+    let acc = '';
+    let sources = [];
+    let raf = null;
+    const flush = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => { raf = null; setBubble(el, acc); });
+    };
+
+    try {
+      const res = await apiFetch('/api/chat/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, language: getApiLang(), attachments })
       });
+      if (!res.ok || !res.body) throw new Error('stream failed');
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      while (true) {
+        const chunk = await reader.read();
+        if (chunk.done) break;
+        buffer += decoder.decode(chunk.value, { stream: true });
+        let idx;
+        while ((idx = buffer.indexOf('\n\n')) >= 0) {
+          const chunkRaw = buffer.slice(0, idx);
+          buffer = buffer.slice(idx + 2);
+          const line = chunkRaw.split('\n').find(l => l.indexOf('data:') === 0);
+          if (!line) continue;
+          let evt;
+          try { evt = JSON.parse(line.slice(5).trim()); } catch (e) { continue; }
+          if (evt.event === 'start') { if (evt.sources) sources = evt.sources; }
+          else if (evt.event === 'delta') { acc += evt.text || ''; flush(); }
+          else if (evt.event === 'done') { if (evt.sources) sources = evt.sources; }
+        }
+      }
+      if (raf) { cancelAnimationFrame(raf); raf = null; }
+      finalizeAssistant(el, acc || t('assistantNoReply'), sources, true);
+      recordAssistant(convoRef, question, acc, sources);
+    } catch (e) {
+      if (raf) { cancelAnimationFrame(raf); raf = null; }
+      if (e && e.name === 'AbortError') {
+        finalizeAssistant(el, acc || '_Stopped._', sources, true);
+        recordAssistant(convoRef, question, acc, sources);
+      } else {
+        finalizeAssistant(el, acc || t('assistantError'), sources, false);
+      }
+    } finally {
+      activeController = null;
+      if (stopBtn) stopBtn.style.display = 'none';
+    }
   }
 
   function showTyping() {
@@ -594,7 +710,7 @@
     el.id = id;
     el.className = 'message assistant typing';
     el.innerHTML = `
-      <div class="message-avatar">M</div>
+      <div class="message-avatar"><img src="assets/logo.png" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover"></div>
       <div class="message-bubble typing-bubble">
         <span class="typing-dots"><span></span><span></span><span></span></span>
       </div>
@@ -609,7 +725,7 @@
     if (el) el.remove();
   }
 
-  function renderMarkdown(src) {
+  function legacyRenderMarkdown(src) {
     let t = escapeHtml(String(src == null ? '' : src));
     t = t.replace(/```([\s\S]*?)```/g, (m, code) => '<pre><code>' + code.replace(/^\n+|\n+$/g, '') + '</code></pre>');
     t = t.replace(/(?:^|\n)((?:\|[^\n]*\|\n?){2,})/g, (m, block) => {
@@ -636,6 +752,32 @@
       '\n<ol>' + block.trim().split('\n').map(l => '<li>' + l.replace(/^\d+\. /, '') + '</li>').join('') + '</ol>\n');
     t = t.replace(/\n/g, '<br>');
     return t;
+  }
+
+  function renderMathHtml(html, math) {
+    if (!window.katex) return html;
+    return html.replace(/@@MATH(\d+)@@/g, (m, i) => {
+      const item = math[+i];
+      if (!item) return m;
+      try {
+        return window.katex.renderToString(item.tex, { displayMode: item.display, throwOnError: false });
+      } catch (e) { return escapeHtml(item.tex); }
+    });
+  }
+
+  function renderMarkdown(src) {
+    const text = String(src == null ? '' : src);
+    if (window.marked) {
+      const math = [];
+      let prep = text.replace(/\$\$([\s\S]+?)\$\$/g, (m, g) => { const i = math.push({ tex: g, display: true }) - 1; return '@@MATH' + i + '@@'; });
+      prep = prep.replace(/(?<!\\)\$(?!\s)([^\n$]+?)(?<!\s)\$(?!\$)/g, (m, g) => { const i = math.push({ tex: g, display: false }) - 1; return '@@MATH' + i + '@@'; });
+      let html;
+      try { html = window.marked.parse(prep, { breaks: true, gfm: true }); }
+      catch (e) { html = escapeHtml(prep); }
+      if (window.DOMPurify) { try { html = window.DOMPurify.sanitize(html); } catch (e) {} }
+      return renderMathHtml(html, math);
+    }
+    return legacyRenderMarkdown(text);
   }
 
   // ---------- Option modal (card panels) ----------
@@ -695,7 +837,7 @@
           if (/\.pdf$/i.test(f.name)) {
             const data = new FormData();
             data.append('file', f, f.name);
-            fetch('/api/upload', { method: 'POST', body: data })
+            apiFetch('/api/upload', { method: 'POST', body: data })
               .then(res => res.json().then(d => ({ ok: res.ok, d })))
               .then(({ ok, d }) => {
                 if (!ok) { showToast(d.detail || t('toastFileReadError')); return; }
@@ -936,6 +1078,7 @@
     const id = 'msg-' + (++messageId);
     const el = document.createElement('div');
     el.id = id;
+    el.dataset.content = content == null ? '' : String(content);
     el.className = 'message ' + role;
 
     if (role === 'user') {
@@ -944,7 +1087,7 @@
       `;
     } else {
       el.innerHTML = `
-        <div class="message-avatar">M</div>
+        <div class="message-avatar"><img src="assets/logo.png" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover"></div>
         <div class="message-bubble">${renderMarkdown(content)}</div>
         <div class="message-actions">
           <button class="action-btn" data-action="copy" aria-label="Copy"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
@@ -973,8 +1116,12 @@
   }
 
   function handleAction(action, msgEl, content) {
+    content = (msgEl && msgEl.dataset && msgEl.dataset.content != null) ? msgEl.dataset.content : content;
     const bubble = msgEl.querySelector('.message-bubble');
     switch (action) {
+      case 'stop':
+        if (activeController) activeController.abort();
+        break;
       case 'copy':
         navigator.clipboard.writeText(content).then(() => {
           showToast(t('toastCopied'));
@@ -1002,7 +1149,7 @@
     const bubble = msgEl.querySelector('.message-bubble');
     bubble.textContent = t('regenerating');
     try {
-      const res = await fetch('/api/chat', {
+      const res = await apiFetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: lastQuestion, language: getApiLang() })
@@ -1119,7 +1266,7 @@
       const data = new FormData();
       data.append('file', file, file.name);
       try {
-        const res = await fetch('/api/upload', { method: 'POST', body: data });
+        const res = await apiFetch('/api/upload', { method: 'POST', body: data });
         const d = await res.json();
         if (!res.ok) { showToast(d.detail || t('toastFileFailed')); continue; }
         pendingAttachments.push({ name: d.name || file.name, kind: d.kind, data: d.data || '', text: d.text || '', size: d.size || file.size });

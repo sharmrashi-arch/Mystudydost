@@ -7,6 +7,12 @@
 db/
 data/raw/
 
+# Temp generated files (PDF/Word/PPT outputs)
+tmp/
+
+# Legacy local chat file (history now lives in db/)
+data/chats.json
+
 # Python
 __pycache__/
 *.py[cod]

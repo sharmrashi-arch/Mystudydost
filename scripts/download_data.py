@@ -18,7 +18,7 @@ except Exception:
 
 LOG_PATH = BASE_DIR / "data" / "download.log"
 DELAY_SECONDS = 1.5
-USER_AGENT = "MyStudyDostBot/0.1 (+educational; local study app)"
+USER_AGENT = "BrainBuddyBot/0.1 (+educational; local study app)"
 TIMEOUT = 30
 MAX_DISCOVER_PER_SOURCE = 50
 

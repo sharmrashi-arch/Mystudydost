@@ -105,7 +105,7 @@ def main():
     ef = embedding_functions.SentenceTransformerEmbeddingFunction(
         model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     )
-    collection = client.get_or_create_collection(name="mystudydost", embedding_function=ef, metadata={"hnsw:space": "cosine"})
+    collection = client.get_or_create_collection(name="brainbuddy", embedding_function=ef, metadata={"hnsw:space": "cosine"})
 
     total_chunks = 0
     for pdf in pdfs:
