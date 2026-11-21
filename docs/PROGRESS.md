@@ -22,3 +22,7 @@ Status key: `not done` · `working (proof)` · `broken` · `not tested`
 
 ## Session log
 - Setup: git clean, server on :8000 (health ok, groq=true), PROGRESS.md created.
+- Feature 1 (chat stream/stop/error): working, verified via Playwright.
+- Feature 4 (vision): working, model fixed to qwen/qwen3.8-27b, verified.
+- Bonus: read-aloud Stop button — code added (app.js/css/i18n), NOT fully tested yet (Playwright stub timing issue), needs re-test.
+- Image generation: NOT possible via Groq (no image-gen model). Needs external API key. Paused.

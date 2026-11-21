@@ -1177,11 +1177,33 @@
     }
   }
 
+  function hideSpeakStop() {
+    const b = document.getElementById('speakStopBtn');
+    if (b) b.remove();
+  }
+
+  function showSpeakStop() {
+    hideSpeakStop();
+    const b = document.createElement('button');
+    b.id = 'speakStopBtn';
+    b.className = 'speak-stop-btn';
+    b.setAttribute('aria-label', 'Stop reading');
+    b.innerHTML = '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg><span>' + t('stopReading') + '</span>';
+    b.addEventListener('click', () => {
+      if (synth) synth.cancel();
+      isSpeaking = false;
+      hideSpeakStop();
+    });
+    document.body.appendChild(b);
+  }
+
   function speakText(text) {
     if (!synth) return;
     if (isSpeaking) {
       synth.cancel();
       isSpeaking = false;
+      hideSpeakStop();
+      return;
     }
 
     const cleanText = text
@@ -1202,9 +1224,9 @@
     utterance.rate = 1;
     utterance.pitch = 1;
 
-    utterance.onstart = () => { isSpeaking = true; };
-    utterance.onend = () => { isSpeaking = false; };
-    utterance.onerror = () => { isSpeaking = false; };
+    utterance.onstart = () => { isSpeaking = true; showSpeakStop(); };
+    utterance.onend = () => { isSpeaking = false; hideSpeakStop(); };
+    utterance.onerror = () => { isSpeaking = false; hideSpeakStop(); };
 
     synth.speak(utterance);
   }
