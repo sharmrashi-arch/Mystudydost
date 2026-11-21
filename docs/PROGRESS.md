@@ -7,7 +7,7 @@ Status key: `not done` · `working (proof)` · `broken` · `not tested`
 | 1 | Chat: live word-by-word answer + Stop button + friendly error | working (proof) | Playwright: text grew 0→12→46 chars live; Stop truncated 1107 vs full ~2500; failed req showed "Sorry, I couldn't answer right now..."; 0 console errors |
 | 2 | Language selector + Auto mode (same language as input) | not tested | |
 | 3 | Attach button: photo/PDF/text, chip + remove, sends with message | not tested | |
-| 4 | Photo understanding (vision Groq model in .env) | not tested | |
+| 4 | Photo understanding (vision Groq model in .env) | working (proof) | `qwen/qwen3.8-27b` accepts images (real call read "FOX 42"); default in config.py fixed (llama-scout doesn't exist); Playwright: uploaded 2x+5=15 photo -> answered x=5, 0 errors |
 | 5 | Question PDF: step-by-step answers in batches + download PDF | not tested | |
 | 6 | Microphone: record -> text -> input, polite blocked message | not tested | |
 | 7 | Listening: "Kya aap ise sunna chahte hain?" + always-speak setting | not tested | |

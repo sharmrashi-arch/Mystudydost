@@ -15,7 +15,7 @@ SERP_API_KEY = os.getenv("SERP_API_KEY", "")
 # Read every model name from .env so they can be changed without touching code.
 GROQ_MODEL = os.getenv("GROQ_MODEL_MAIN", os.getenv("GROQ_MODEL", "openai/gpt-oss-120b"))
 GROQ_MODEL_FAST = os.getenv("GROQ_MODEL_FAST", "openai/gpt-oss-20b")
-GROQ_MODEL_VISION = os.getenv("GROQ_MODEL_VISION", "meta-llama/llama-4-scout-17b-16e-instruct")
+GROQ_MODEL_VISION = os.getenv("GROQ_MODEL_VISION", "qwen/qwen3.8-27b")
 GROQ_MODEL_STT = os.getenv("GROQ_MODEL_STT", "whisper-large-v3-turbo")
 
 DATA_DIR = BASE_DIR / "data"
